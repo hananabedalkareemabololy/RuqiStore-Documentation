@@ -1,11 +1,64 @@
-# 4. Use Case Analysis
+# 4. Use Case Model
 
-## 4.1 Use Case Diagram
+## 4.1 Actor Catalog
+
+| Actor | Type | Description | Key Goals |
+|-------|------|-------------|-----------|
+| Customer | Primary | Registered customer purchasing furniture products online | Browse products, manage cart, place orders, book showroom visits, submit verified reviews |
+| Store Manager | Primary | Employee responsible for store operations and product management | Manage products, categories, showroom appointments, inventory activities |
+| Accountant | Primary | Staff member responsible for financial monitoring | Audit payments, billing status, invoices, and transaction records |
+| Administrator | Primary | System administrator responsible for security and user management | Manage roles, permissions, security audits, and system access |
+| Email Service | Secondary | External SMTP notification service | Deliver order confirmations, invoices, and transactional notifications |
+
+---
+
+### Actor Generalization
 
 ```mermaid
+classDiagram
+
+    class SystemUser {
+        +login()
+        +logout()
+        +updateProfile()
+        +changePassword()
+    }
+
+    class Customer {
+        +browseCatalog()
+        +manageCart()
+        +checkout()
+        +bookShowroomVisit()
+        +submitReview()
+    }
+
+    class StoreManager {
+        +manageProducts()
+        +manageCategories()
+        +manageShowroomBookings()
+    }
+
+    class Accountant {
+        +auditPayments()
+        +reviewBillingStatus()
+    }
+
+    class Administrator {
+        +manageRoles()
+        +performSecurityAudit()
+    }
+
+
+    SystemUser <|-- Customer
+    SystemUser <|-- StoreManager
+    SystemUser <|-- Accountant
+    SystemUser <|-- Administrator
+
+## 4.2 Use Case Diagram
 graph TB
 
     subgraph RuqiStore["Ruqi Store E-Commerce System"]
+
         UC1((Login & Session Management))
         UC2((Browse Catalog & Filter))
         UC3((Manage Shopping Cart))
@@ -13,18 +66,22 @@ graph TB
         UC5((Manage Curated Wishlist))
         UC6((Submit Verified Product Review))
         UC7((Book Showroom Visit))
+
         UC8((Manage Products & Categories))
         UC9((Approve / Reschedule Showroom Visits))
         UC10((Audit Payments & Billing Status))
         UC11((Manage User Roles & Security Audits))
         UC12((Send Transactional Email))
+
     end
+
 
     Customer[Customer]
     Manager[Store Manager]
     Accountant[Accountant]
     Admin[Administrator]
     Email[Email Service]
+
 
     Customer --> UC2
     Customer --> UC3
@@ -33,12 +90,16 @@ graph TB
     Customer --> UC6
     Customer --> UC7
 
+
     Manager --> UC8
     Manager --> UC9
 
+
     Accountant --> UC10
 
+
     Admin --> UC11
+
 
     UC3 -.->|include| UC1
     UC4 -.->|include| UC1
@@ -46,37 +107,35 @@ graph TB
     UC6 -.->|include| UC1
     UC7 -.->|include| UC1
 
+
     UC4 -.->|extend| UC12
     UC8 -.->|extend| UC12
 
+
     UC12 --> Email
+## Relationships Explained
 
----
+- **Include (Login & Session Management):**  
+  Use cases that access or modify personalized customer data require an authenticated session before execution.
 
-## 4.2 Relationships Explanation
+  Included use cases:
 
-### Include Relationship: Login & Session Management
-
-Operations that modify personalized customer data require an active authenticated session before execution.
-
-Included operations:
-
-- Manage Shopping Cart
-- Checkout & Place Order
-- Wishlist Management
-- Product Reviews
-- Showroom Booking
+  - Manage Shopping Cart
+  - Checkout & Place Order
+  - Manage Curated Wishlist
+  - Submit Verified Product Review
+  - Book Showroom Visit
 
 
-### Extend Relationship: Transactional Email
+- **Extend (Transactional Email):**  
+  Some system operations optionally trigger external email notifications after successful completion.
 
-Some system actions optionally trigger external email notifications:
+  Examples:
 
-- Successful orders generate confirmation emails and invoices.
-- Inventory events such as low-stock alerts may generate notifications.
+  - Successful checkout generates order confirmation and invoice emails.
+  - Product management events such as low-stock conditions may generate notifications.
 
-The Email Service acts as an external system.
-
+  The Email Service is treated as an external secondary actor.
 
 ---
 
@@ -84,185 +143,143 @@ The Email Service acts as an external system.
 
 ---
 
-# UC-004: Checkout & Place Order
-
-## Fully Dressed Use Case
+## UC-004: Checkout & Place Order (Fully Dressed)
 
 | Field | Detail |
-|---|---|
-| Use Case ID | UC-004 |
-| Name | Checkout & Place Order |
-| Actor | Customer |
-| Description | A registered customer reviews their shopping cart, provides shipping information, and finalizes the purchase while locking prices and reducing stock. |
+|-------|--------|
+| **Use Case ID** | UC-004 |
+| **Name** | Checkout & Place Order |
+| **Actor** | Customer |
+| **Description** | A registered customer reviews their shopping cart, provides shipping information, and finalizes the purchase while the system locks prices, updates inventory, and creates an order record. |
+| **Preconditions** | Customer is logged in; cart contains at least one active item; all products have sufficient stock availability. |
+| **Postconditions** | Order is created; product prices are frozen; inventory quantities are reduced; cart is cleared; invoice is generated; confirmation email is queued. |
+| **Trigger** | Customer clicks "Proceed to Checkout." |
 
-## Preconditions
 
-- Customer is logged in.
-- Cart contains at least one active item.
-- All products have sufficient physical stock.
-
-## Postconditions
-
-- Database transaction is committed.
-- Product prices are frozen in Order Items.
-- Stock quantities are reduced.
-- Cart is cleared.
-- Invoice is generated.
-- Confirmation email is queued.
-
-## Trigger
-
-Customer clicks **Proceed to Checkout**.
-## Main Success Scenario
+**Main Success Scenario:**
 
 | Step | Action |
-|---|---|
-| 1 | Customer reviews cart and clicks Proceed to Checkout. |
+|------|--------|
+| 1 | Customer reviews cart contents and selects "Proceed to Checkout." |
 | 2 | System requests shipping address and billing information. |
-| 3 | Customer enters valid information and confirms order. |
+| 3 | Customer enters valid information and confirms the order. |
 | 4 | System starts a database transaction. |
 | 5 | System locks product records and validates stock availability. |
 | 6 | System deducts purchased quantities from inventory. |
-| 7 | System stores current prices as PriceSnapshot values. |
-| 8 | System removes purchased items from the cart. |
-| 9 | System commits transaction and creates invoice with Pending Payment status. |
-| 10 | System displays confirmation number and sends email notification. |
+| 7 | System stores current product prices as PriceSnapshot values. |
+| 8 | System removes purchased items from the shopping cart. |
+| 9 | System commits the transaction and creates an invoice with Pending Payment status. |
+| 10 | System displays confirmation details and sends an order notification email. |
 
 
----
-
-## Alternative Flow
+**Alternative Flows:**
 
 | ID | Condition | Steps |
-|---|---|---|
+|----|-----------|-------|
 | A1 | Customer has no saved address | System requests a new address, validates it, saves it, and continues checkout. |
+| A2 | Customer modifies cart before payment | System recalculates totals and validates stock again before continuing. |
 
 
----
-
-## Exception Flows
+**Exception Flows:**
 
 | ID | Condition | Steps |
-|---|---|---|
-| E1 | Insufficient Stock | Transaction is rolled back and user receives stock warning. |
-| E2 | Payment Gateway Failure | Order transaction is cancelled and user receives failure message. |
+|----|-----------|-------|
+| E1 | Insufficient Stock | Transaction is rolled back and the customer receives a stock availability warning. |
+| E2 | Payment Gateway Failure | Order process is cancelled and the customer receives a payment failure message. |
+| E3 | Database Transaction Failure | System rolls back all changes and records the failure event. |
 
 
----
-
-## Business Rules
+**Business Rules:**
 
 - Product prices must be frozen during checkout.
 - Historical orders must not change after catalog price updates.
-- Checkout must run inside a database transaction to prevent overselling.
-
-
+- Checkout must execute inside a database transaction to prevent overselling.
+- Inventory quantities cannot become negative.
 ---
 
-# UC-007: Book Showroom Visit
-
-## Fully Dressed Use Case
+## UC-007: Book Showroom Visit (Fully Dressed)
 
 | Field | Detail |
-|---|---|
-| Use Case ID | UC-007 |
-| Name | Book Showroom Visit |
-| Actor | Customer |
-| Description | Customer schedules a showroom appointment to view furniture products physically. |
+|-------|--------|
+| **Use Case ID** | UC-007 |
+| **Name** | Book Showroom Visit |
+| **Actor** | Customer |
+| **Description** | Customer schedules a showroom appointment to physically view furniture products and select a suitable visit time. |
+| **Preconditions** | Customer is authenticated; selected showroom location exists; requested time slot is available; booking is within business hours. |
+| **Postconditions** | Appointment record is created; booking status becomes Pending Approval; store manager receives notification. |
+| **Trigger** | Customer selects "Book Showroom Visit." |
 
-## Preconditions
 
-- Customer is authenticated.
-- Selected time slot is available.
-- Booking is within business hours.
-
-## Postconditions
-
-- Appointment record is created.
-- Status becomes Pending Approval.
-- Manager receives notification.
-
-## Trigger
-
-Customer selects **Book Showroom Visit**.
-## UC-007 Main Success Scenario
+**Main Success Scenario:**
 
 | Step | Action |
-|---|---|
-| 1 | Customer selects showroom location. |
+|------|--------|
+| 1 | Customer selects a showroom location. |
 | 2 | System displays available dates and time slots. |
-| 3 | Customer chooses a slot and confirms booking. |
+| 3 | Customer chooses a preferred slot and confirms booking. |
 | 4 | System validates slot availability. |
-| 5 | System creates appointment record in the database. |
-| 6 | System displays booking confirmation details. |
+| 5 | System creates an appointment record in the database. |
+| 6 | System assigns Pending Approval status. |
+| 7 | System displays booking confirmation details. |
+| 8 | System notifies the store manager about the new appointment request. |
 
 
----
-
-## Alternative Flow
+**Alternative Flows:**
 
 | ID | Condition | Steps |
-|---|---|---|
+|----|-----------|-------|
 | A1 | Customer edits booking | Customer selects another available slot and updates appointment details. |
+| A2 | Customer cancels booking | System updates appointment status to Cancelled and releases the time slot. |
 
 
----
-
-## Exception Flow
+**Exception Flows:**
 
 | ID | Condition | Steps |
-|---|---|---|
+|----|-----------|-------|
 | E1 | Double booking detected | System rejects the request and asks customer to select another available slot. |
+| E2 | Showroom unavailable | System informs customer that the selected showroom cannot accept bookings currently. |
 
+
+**Business Rules:**
+
+- A customer cannot have multiple active bookings for the same showroom slot.
+- Appointments require manager approval before final confirmation.
+- Booking must occur only within configured business hours.
 
 ---
 
-# UC-006: Submit Verified Product Review
-
-## Brief Description
+## UC-006: Submit Verified Product Review (Brief)
 
 | Field | Detail |
-|---|---|
-| Use Case ID | UC-006 |
-| Name | Submit Verified Product Review |
-| Actor | Customer |
-| Description | Customer submits a rating and review only for products they have purchased. |
+|-------|--------|
+| **Use Case ID** | UC-006 |
+| **Name** | Submit Verified Product Review |
+| **Actor** | Customer |
+| **Description** | Customer submits a rating and review only for products they have purchased and received. |
+| **Preconditions** | Customer is logged in; product exists in a delivered order; customer has not reviewed the product before. |
+| **Postconditions** | Review record is stored; review status becomes Pending Moderation. |
+| **Trigger** | Customer opens a purchased product page and selects "Write Review." |
 
 
----
+**Main Flow:**
 
-## Main Flow
-
-1. Customer opens the purchased product page.
-2. System verifies that the customer has a matching delivered order.
-3. Customer enters rating (1-5 stars) and review text.
-4. System checks for existing reviews to prevent duplicates.
-5. Customer submits the review for Administrator moderation.
-
-
----
-
-## Preconditions
-
-- Customer is logged in.
-- Product exists in a Delivered order.
-- Customer has not reviewed this product before.
+| Step | Action |
+|------|--------|
+| 1 | Customer opens the product details page. |
+| 2 | System verifies customer purchase history. |
+| 3 | Customer enters rating from 1 to 5 stars and writes review text. |
+| 4 | System checks for duplicate reviews. |
+| 5 | Customer submits the review. |
+| 6 | System saves the review with Pending Moderation status for administrator approval. |
 
 
----
+**Validation Rules:**
 
-## Postconditions
-
-- Review record is saved.
-- Review status becomes Pending Moderation.
-
+- Customer must be authenticated.
+- Product must exist in a Delivered order.
+- Each customer can submit only one review per product.
+- Reviews require moderation before public display.
 
 ---
 
-## Navigation
-
-⬅ Previous: Requirements Specification
-
-🏠 Back to Index
-
-➡ Next: User Stories
+[← Previous: Requirements Specification](./03-requirements.md) | [Back to Index](./00-index.md) | [Next: User Stories →](./05-user-stories.md)
