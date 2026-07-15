@@ -12,7 +12,7 @@
 
 ---
 
-### Actor Generalization
+## Actor Generalization
 
 ```mermaid
 classDiagram
@@ -48,13 +48,11 @@ classDiagram
         +performSecurityAudit()
     }
 
-
     SystemUser <|-- Customer
     SystemUser <|-- StoreManager
     SystemUser <|-- Accountant
     SystemUser <|-- Administrator
-
-## 4.2 Use Case Diagram
+```mermaid
 graph TB
 
     subgraph RuqiStore["Ruqi Store E-Commerce System"]
@@ -108,34 +106,40 @@ graph TB
     UC7 -.->|include| UC1
 
 
-    UC4 -.->|extend| UC12
-    UC8 -.->|extend| UC12
+    UC12 -.->|extend| UC4
+    UC12 -.->|extend| UC8
 
 
     UC12 --> Email
+
 ## Relationships Explained
 
-- **Include (Login & Session Management):**  
-  Use cases that access or modify personalized customer data require an authenticated session before execution.
+### Include Relationship (Login & Session Management)
 
-  Included use cases:
+The `include` relationship represents mandatory authentication behavior required before executing specific use cases.
 
-  - Manage Shopping Cart
-  - Checkout & Place Order
-  - Manage Curated Wishlist
-  - Submit Verified Product Review
-  - Book Showroom Visit
+The following use cases require an authenticated session:
 
+- Manage Shopping Cart
+- Checkout & Place Order
+- Manage Curated Wishlist
+- Submit Verified Product Review
+- Book Showroom Visit
 
-- **Extend (Transactional Email):**  
-  Some system operations optionally trigger external email notifications after successful completion.
+Authentication is reused as a common system behavior to ensure secure access to customer-specific data.
 
-  Examples:
+---
 
-  - Successful checkout generates order confirmation and invoice emails.
-  - Product management events such as low-stock conditions may generate notifications.
+### Extend Relationship (Transactional Email)
 
-  The Email Service is treated as an external secondary actor.
+The `extend` relationship represents optional additional behavior triggered after successful system operations.
+
+Examples:
+
+- Successful checkout triggers order confirmation and invoice email notifications.
+- Product management events may trigger email notifications when configured conditions occur.
+
+The Email Service is modeled as an external secondary actor responsible for delivering transactional messages.
 
 ---
 
@@ -155,8 +159,9 @@ graph TB
 | **Postconditions** | Order is created; product prices are frozen; inventory quantities are reduced; cart is cleared; invoice is generated; confirmation email is queued. |
 | **Trigger** | Customer clicks "Proceed to Checkout." |
 
+---
 
-**Main Success Scenario:**
+### Main Success Scenario
 
 | Step | Action |
 |------|--------|
@@ -171,16 +176,18 @@ graph TB
 | 9 | System commits the transaction and creates an invoice with Pending Payment status. |
 | 10 | System displays confirmation details and sends an order notification email. |
 
+---
 
-**Alternative Flows:**
+### Alternative Flows
 
 | ID | Condition | Steps |
 |----|-----------|-------|
 | A1 | Customer has no saved address | System requests a new address, validates it, saves it, and continues checkout. |
 | A2 | Customer modifies cart before payment | System recalculates totals and validates stock again before continuing. |
 
+---
 
-**Exception Flows:**
+### Exception Flows
 
 | ID | Condition | Steps |
 |----|-----------|-------|
@@ -188,8 +195,9 @@ graph TB
 | E2 | Payment Gateway Failure | Order process is cancelled and the customer receives a payment failure message. |
 | E3 | Database Transaction Failure | System rolls back all changes and records the failure event. |
 
+---
 
-**Business Rules:**
+### Business Rules
 
 - Product prices must be frozen during checkout.
 - Historical orders must not change after catalog price updates.
@@ -209,8 +217,9 @@ graph TB
 | **Postconditions** | Appointment record is created; booking status becomes Pending Approval; store manager receives notification. |
 | **Trigger** | Customer selects "Book Showroom Visit." |
 
+---
 
-**Main Success Scenario:**
+### Main Success Scenario
 
 | Step | Action |
 |------|--------|
@@ -223,24 +232,27 @@ graph TB
 | 7 | System displays booking confirmation details. |
 | 8 | System notifies the store manager about the new appointment request. |
 
+---
 
-**Alternative Flows:**
+### Alternative Flows
 
 | ID | Condition | Steps |
 |----|-----------|-------|
 | A1 | Customer edits booking | Customer selects another available slot and updates appointment details. |
 | A2 | Customer cancels booking | System updates appointment status to Cancelled and releases the time slot. |
 
+---
 
-**Exception Flows:**
+### Exception Flows
 
 | ID | Condition | Steps |
 |----|-----------|-------|
 | E1 | Double booking detected | System rejects the request and asks customer to select another available slot. |
 | E2 | Showroom unavailable | System informs customer that the selected showroom cannot accept bookings currently. |
 
+---
 
-**Business Rules:**
+### Business Rules
 
 - A customer cannot have multiple active bookings for the same showroom slot.
 - Appointments require manager approval before final confirmation.
@@ -260,8 +272,9 @@ graph TB
 | **Postconditions** | Review record is stored; review status becomes Pending Moderation. |
 | **Trigger** | Customer opens a purchased product page and selects "Write Review." |
 
+---
 
-**Main Flow:**
+### Main Flow
 
 | Step | Action |
 |------|--------|
@@ -272,8 +285,9 @@ graph TB
 | 5 | Customer submits the review. |
 | 6 | System saves the review with Pending Moderation status for administrator approval. |
 
+---
 
-**Validation Rules:**
+### Validation Rules
 
 - Customer must be authenticated.
 - Product must exist in a Delivered order.
