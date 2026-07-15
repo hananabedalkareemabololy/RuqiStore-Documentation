@@ -33,8 +33,9 @@ The Domain Model represents the core conceptual schema and entity relationships 
   │   Wishlist   │            │ Id           │
   ├──────────────┤            │ Quantity     │
   │ Id           │            └──────────────┘
-  └──────────────┘           
-
+  │ ProductId    │
+  └──────────────┘
+``` ​
 ## 👥 Core Domain Entities & Structural Attributes
 
 ### 1. User & Identity Management
@@ -61,7 +62,3 @@ The Domain Model represents the core conceptual schema and entity relationships 
 * **One-to-One (`ApplicationUser` ◄──► `Cart`):** Strict relationship constraint enforced by a unique index on the entity's `UserId`.
 * **One-to-Many (`ApplicationUser` ──► `Wishlist`):** An authenticated user can catalog multiple desired items within their active wishlist database.
 * **One-to-Many (`Order` ──► `OrderItems`):** A single completed purchase invoice captures and renders multiple distinct line items.
-
-  │ ProductId    │
-  └──────────────┘
-``` ​
