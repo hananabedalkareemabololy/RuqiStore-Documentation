@@ -41,8 +41,10 @@ sequenceDiagram
     DB-->>OrderCtrl: Transaction Success
     
     OrderCtrl-->>UI: Order Placed Successfully (OrderId)
+    deactivate OrderCtrl
+    UI-->>Customer: Display Order Success Screen & Receipt
+    deactivate UI
 
-``` ​
 ## 📦 2. Inventory Adjustment System (Sequence Diagram)
 
 This workflow shows how the system automatically manages stock levels immediately after an order is successfully processed to prevent overselling.
@@ -70,7 +72,7 @@ sequenceDiagram
 
     StockService-->>OrderCtrl: Inventory Deducted & Verified
     deactivate StockService
-```
+
 ## 📑 3. Behavioral Rules & Constraints
 
 To ensure data integrity and a seamless user experience during these operations, the system enforces the following rules:
@@ -78,6 +80,3 @@ To ensure data integrity and a seamless user experience during these operations,
 * **Price Freeze Constraint:** When a user checks out, the `OrderItem` price must be saved as a static snapshot (`PriceSnapshot`). If the price of the actual `Product` changes in the catalog later, the historical order invoice remains unaffected.
 * **Concurrency Lock:** During checkout, stock verification and stock deduction happen in a single database transaction. This prevents two users from checking out the last available item simultaneously.
 * **Automatic Cart Clearance:** Upon successful order confirmation, the application must immediately purge all related `CartItem` records linked to the user's active `Cart` ID.
-    deactivate OrderCtrl
-    UI-->>Customer: Display Order Success Screen & Receipt
-    deactivate UI
