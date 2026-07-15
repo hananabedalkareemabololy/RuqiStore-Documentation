@@ -2,17 +2,42 @@
 
 ## 📌 Overview
 
-This document provides a detailed technical specification of the service interfaces, Data Transfer Objects (DTOs), and API contracts that support the **Ruqi Store** application. It serves as a reference for backend implementation by defining the required methods, parameters, and business rules.
+> **Purpose**
+>
+> This document defines the service interfaces, Data Transfer Objects (DTOs), API contracts, and validation rules used by the **Ruqi Store** backend. It serves as a technical reference for implementing the Business Logic Layer while promoting maintainability, loose coupling, and scalability.
 
 ---
 
-## 🛠️ 1. Service Contracts & Interfaces
+## 📑 Contents
 
-The following interfaces define the core business services within the Business Logic Layer (BLL). Controllers depend on these interfaces rather than concrete implementations, promoting loose coupling and testability.
+- Service Contracts & Interfaces
+- Data Transfer Objects (DTOs)
+- System Validation & Business Rules
+- Design Principles
+- Summary
 
-### A. `IOrderService`
+---
 
-Responsible for checkout, order management, and order history retrieval.
+# 🛠️ 1. Service Contracts & Interfaces
+
+The following interfaces define the contracts between the Presentation Layer and the Business Logic Layer. Controllers communicate only with interfaces, allowing implementations to be replaced without affecting higher layers.
+
+---
+
+## A. `IOrderService`
+
+**Responsibility**
+
+Handles the complete order lifecycle, including checkout, order retrieval, and order status management.
+
+### Methods
+
+| Method | Description |
+|---------|-------------|
+| `PlaceOrderAsync()` | Creates a new order from the user's active shopping cart. |
+| `GetOrderByIdAsync()` | Returns detailed information about a specific order. |
+| `GetUserOrderHistoryAsync()` | Retrieves all previous orders for a user. |
+| `UpdateOrderStatusAsync()` | Updates the status of an order (Admin only). |
 
 ```csharp
 public interface IOrderService
@@ -22,16 +47,16 @@ public interface IOrderService
         string userId,
         CheckoutDto checkoutDetails);
 
-    // Retrieves detailed information about a specific order.
+    // Retrieves detailed information for a specific order.
     Task<OrderDetailsDto> GetOrderByIdAsync(
         int orderId,
         string userId);
 
-    // Returns all orders belonging to a user.
+    // Returns all orders belonging to the specified user.
     Task<IEnumerable<OrderSummaryDto>> GetUserOrderHistoryAsync(
         string userId);
 
-    // Updates the order status (Admin only).
+    // Updates the order status.
     Task<bool> UpdateOrderStatusAsync(
         int orderId,
         string status);
@@ -40,9 +65,21 @@ public interface IOrderService
 
 ---
 
-### B. `ICartService`
+## B. `ICartService`
 
-Responsible for managing the user's active shopping cart.
+**Responsibility**
+
+Manages the user's active shopping cart and validates inventory before checkout.
+
+### Methods
+
+| Method | Description |
+|---------|-------------|
+| `GetActiveCartAsync()` | Retrieves the user's current shopping cart. |
+| `AddToCartAsync()` | Adds a product to the shopping cart. |
+| `UpdateCartItemQuantityAsync()` | Changes the quantity of an existing cart item. |
+| `RemoveFromCartAsync()` | Removes an item from the shopping cart. |
+| `ClearCartAsync()` | Removes all items after successful checkout. |
 
 ```csharp
 public interface ICartService
@@ -50,7 +87,7 @@ public interface ICartService
     // Retrieves the user's active cart.
     Task<CartDto> GetActiveCartAsync(string userId);
 
-    // Adds a product to the cart.
+    // Adds a product to the shopping cart.
     Task<bool> AddToCartAsync(
         string userId,
         int productId,
@@ -62,23 +99,29 @@ public interface ICartService
         int cartItemId,
         int newQuantity);
 
-    // Removes an item from the cart.
+    // Removes an item from the shopping cart.
     Task<bool> RemoveFromCartAsync(
         string userId,
         int cartItemId);
 
-    // Clears the active cart.
+    // Clears all items from the active cart.
     Task<bool> ClearCartAsync(string userId);
 }
 ```
 
 ---
 
-## 📦 2. Data Transfer Objects (DTOs)
+# 📦 2. Data Transfer Objects (DTOs)
 
-DTOs transfer data between layers without exposing Entity Framework models directly to the presentation layer.
+DTOs are lightweight classes used to transfer data between application layers without exposing Entity Framework entities directly.
 
-### `CheckoutDto`
+---
+
+## `CheckoutDto`
+
+**Purpose**
+
+Carries checkout information from the Presentation Layer to the Business Logic Layer.
 
 ```csharp
 public class CheckoutDto
@@ -91,7 +134,11 @@ public class CheckoutDto
 
 ---
 
-### `OrderResponseDto`
+## `OrderResponseDto`
+
+**Purpose**
+
+Represents the result returned after attempting to place an order.
 
 ```csharp
 public class OrderResponseDto
@@ -106,7 +153,11 @@ public class OrderResponseDto
 
 ---
 
-### `CartItemDto`
+## `CartItemDto`
+
+**Purpose**
+
+Represents a single product displayed in the shopping cart.
 
 ```csharp
 public class CartItemDto
@@ -123,46 +174,104 @@ public class CartItemDto
 
 ---
 
-## 🔒 3. System Validation & Business Rules
+# 🔒 3. System Validation & Business Rules
 
-Before any transaction is committed, the application enforces the following validation rules.
+Before any checkout transaction is committed, the following validation rules are enforced.
 
-### Checkout Validation Pipeline
+## Checkout Validation Pipeline
 
-#### Stock Verification
+| Step | Validation |
+|------|------------|
+| **1** | Verify product stock availability. |
+| **2** | Read the current product price. |
+| **3** | Store the price in `OrderItem.PriceSnapshot`. |
+| **4** | Create the `Order` record. |
+| **5** | Create all `OrderItems`. |
+| **6** | Deduct inventory quantities. |
+| **7** | Clear the user's shopping cart. |
+| **8** | Commit the transaction. |
 
-Before creating an order, the system verifies the available quantity of each product.
+### Checkout Workflow
 
-- If `OrderedQuantity > StockQuantity`, the checkout process is cancelled.
-- An `InvalidOperationException` (or an equivalent validation error) is returned to notify the user that the requested quantity is unavailable.
+```mermaid
+flowchart TD
+
+A[Checkout Request]
+-->B[Verify Stock]
+
+B-->C[Freeze Product Prices]
+
+C-->D[Create Order]
+
+D-->E[Create Order Items]
+
+E-->F[Update Inventory]
+
+F-->G[Clear Shopping Cart]
+
+G-->H[Commit Transaction]
+
+H-->I[Return Success Response]
+```
 
 ---
 
-#### Price Snapshot
+## Validation Rules
 
-During checkout, the current product price is copied into `OrderItem.PriceSnapshot`.
+### Stock Verification
 
-This preserves historical pricing even if the product price changes after the order is completed.
+Before creating an order, the application verifies the available inventory for every product in the shopping cart.
 
----
-
-#### Atomic Transaction
-
-The following operations execute within a single database transaction (`IDbContextTransaction`):
-
-1. Create the `Order`.
-2. Create all `OrderItems`.
-3. Copy the current product price into `PriceSnapshot`.
-4. Deduct inventory quantities.
-5. Clear the user's shopping cart.
-
-If any operation fails, the transaction is rolled back to maintain data consistency.
+- If the requested quantity exceeds the available stock, the checkout process is cancelled.
+- An appropriate validation error (such as `InvalidOperationException`) is returned to the user.
 
 ---
 
-## ✅ Design Principles Applied
+### Price Snapshot
 
-- **Interface-Based Programming** – Controllers depend on interfaces rather than concrete implementations.
-- **Dependency Injection (DI)** – Services are resolved through ASP.NET Core's built-in dependency injection container.
-- **DTO Pattern** – Separates domain entities from client-facing models.
-- **Asynchronous Programming** – All service methods use asynchronous operations (`Task`) to improve scalability and responsiveness.
+During checkout, the current product price is copied into the `OrderItem.PriceSnapshot` field.
+
+This ensures historical order data remains unchanged even if product prices are modified later.
+
+---
+
+### Atomic Transaction
+
+The following operations execute within a single `IDbContextTransaction`:
+
+1. Create the order.
+2. Create all order items.
+3. Save price snapshots.
+4. Deduct inventory.
+5. Clear the shopping cart.
+
+If any operation fails, the transaction is rolled back automatically to preserve database consistency.
+
+---
+
+# ⚙️ 4. Design Principles
+
+| Principle | Description |
+|-----------|-------------|
+| **Dependency Injection** | Services are registered through ASP.NET Core Dependency Injection. |
+| **Interface-Based Programming** | Controllers depend on interfaces instead of concrete implementations. |
+| **Repository Pattern** | Encapsulates all database operations behind repository interfaces. |
+| **DTO Pattern** | Prevents Entity Framework models from being exposed to the Presentation Layer. |
+| **Asynchronous Programming** | All service methods return `Task` to improve scalability and responsiveness. |
+| **Separation of Concerns** | Each application layer has a single, clearly defined responsibility. |
+
+---
+
+# ✅ Summary
+
+This document specifies the backend contracts used by the **Ruqi Store** application.
+
+It includes:
+
+- Service interfaces for the Business Logic Layer.
+- Data Transfer Objects (DTOs).
+- Checkout validation rules.
+- Transaction requirements.
+- Architectural design principles.
+
+Together, these contracts provide a clear blueprint for implementing a scalable, maintainable, and secure backend architecture.
