@@ -3,13 +3,14 @@
 ## 2.1 Stakeholder Register
 
 | # | Stakeholder | Role | Interest | Influence | Key Concern |
-| :---: | :--- | :--- | :---: | :---: | :--- |
+| :---: | :--- | :--- | :--- | :---: | :---: |
 | **1** | **Youssef Al-Ruqi** | Store Owner / Director | Strategic growth, ROI | High | Business profitability, inventory accuracy, and brand image |
 | **2** | **Sarah Mansour** | Store Manager | Showroom & online operations | High | Ease of catalog updates, smooth order fulfillment, and workflow efficiency |
-| **3** | **Ahmed Rayyan** | Accountant | Financial governance | High | Payment reconciliation, invoice accuracy, and immutable audit logs |
+| **3** | **Ahmed Rayyan** | Accountant | Financial governance | High | Payment reconciliation, invoice accuracy, and tamper-resistant audit logs |
 | **4** | **Deema Khaled** | Customer (End User) | Purchasing furniture | Medium | Intuitive checkout, persistent shopping carts, and clear order tracking |
 | **5** | **Khaled Al-Najjar** | IT Administrator | System maintenance & security | High | Role-based access control (RBAC), database uptime, and system security |
 | **6** | **E-Commerce Team** | Marketing & Content Editors | Product display | Medium | Clean visual layout, product categorization, and seamless UI/UX |
+
 ---
 
 # 2.2 Stakeholder Map
@@ -29,11 +30,13 @@ quadrantChart
     quadrant-4 Keep Informed
 
     "Store Owner": [0.85, 0.90]
-    "IT Admin": [0.70, 0.85]
+    "IT Administrator": [0.70, 0.85]
     "Store Manager": [0.80, 0.75]
     "Accountant": [0.75, 0.70]
     "Customer": [0.85, 0.45]
     "E-Commerce Team": [0.60, 0.35]
+```
+
 ---
 
 # 2.3 Stakeholder Needs Summary
@@ -49,7 +52,7 @@ quadrantChart
 - Business performance monitoring.
 
 ### Key Goal:
-Transform traditional offline showroom operations into a fully digitized business model that reduces inventory issues and increases revenue.
+Transform traditional offline showroom operations into a fully digital business model that reduces inventory issues and increases revenue.
 
 ---
 
@@ -66,8 +69,8 @@ Transform traditional offline showroom operations into a fully digitized busines
 
 ### Key Goal:
 Enable automatic real-time stock reduction after successful customer checkout to eliminate manual inventory tracking and prevent double-booking of products.
----
 
+---
 ## 💳 Accountant (Ahmed Rayyan)
 
 ### Needs:
@@ -87,7 +90,7 @@ Ensure that future product price changes do not affect previous financial record
 - Premium responsive furniture browsing experience.
 - Easy navigation through furniture collections.
 - Persistent shopping cart that remains available after logout.
-- Wishlist feature called **"Curated Collection"** for saving preferred designs.
+- A wishlist feature named **"Curated Collection"** for saving preferred designs.
 - Clear order status tracking.
 
 ### Key Goal:
@@ -106,7 +109,7 @@ Provide a seamless and personalized shopping experience that helps customers dis
   - Administrators.
 - Complete security audit logs.
 - Database transaction protection.
-- Prevention of checkout race conditions.
+- Prevention of inventory conflicts during simultaneous purchases.
 
 ### Key Goal:
 Maintain platform security, reliability, availability, and data integrity.
