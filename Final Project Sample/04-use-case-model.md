@@ -48,27 +48,30 @@ classDiagram
         +performSecurityAudit()
     }
 
+
     SystemUser <|-- Customer
     SystemUser <|-- StoreManager
     SystemUser <|-- Accountant
     SystemUser <|-- Administrator
+## 4.2 Use Case Diagram
+
 ```mermaid
 graph TB
 
     subgraph RuqiStore["Ruqi Store E-Commerce System"]
 
-        UC1((Login & Session Management))
-        UC2((Browse Catalog & Filter))
+        UC1((Login and Session Management))
+        UC2((Browse Catalog and Filter))
         UC3((Manage Shopping Cart))
-        UC4((Checkout & Place Order))
+        UC4((Checkout and Place Order))
         UC5((Manage Curated Wishlist))
         UC6((Submit Verified Product Review))
         UC7((Book Showroom Visit))
 
-        UC8((Manage Products & Categories))
-        UC9((Approve / Reschedule Showroom Visits))
-        UC10((Audit Payments & Billing Status))
-        UC11((Manage User Roles & Security Audits))
+        UC8((Manage Products and Categories))
+        UC9((Approve or Reschedule Showroom Visits))
+        UC10((Audit Payments and Billing Status))
+        UC11((Manage User Roles and Security Audits))
         UC12((Send Transactional Email))
 
     end
@@ -106,22 +109,21 @@ graph TB
     UC7 -.->|include| UC1
 
 
-    UC12 -.->|extend| UC4
-    UC12 -.->|extend| UC8
+    UC4 -.->|extend| UC12
+    UC8 -.->|extend| UC12
 
 
     UC12 --> Email
-
 ## Relationships Explained
 
-### Include Relationship (Login & Session Management)
+### Include Relationship (Login and Session Management)
 
 The `include` relationship represents mandatory authentication behavior required before executing specific use cases.
 
 The following use cases require an authenticated session:
 
 - Manage Shopping Cart
-- Checkout & Place Order
+- Checkout and Place Order
 - Manage Curated Wishlist
 - Submit Verified Product Review
 - Book Showroom Visit
@@ -147,12 +149,12 @@ The Email Service is modeled as an external secondary actor responsible for deli
 
 ---
 
-## UC-004: Checkout & Place Order (Fully Dressed)
+## UC-004: Checkout and Place Order (Fully Dressed)
 
 | Field | Detail |
 |-------|--------|
 | **Use Case ID** | UC-004 |
-| **Name** | Checkout & Place Order |
+| **Name** | Checkout and Place Order |
 | **Actor** | Customer |
 | **Description** | A registered customer reviews their shopping cart, provides shipping information, and finalizes the purchase while the system locks prices, updates inventory, and creates an order record. |
 | **Preconditions** | Customer is logged in; cart contains at least one active item; all products have sufficient stock availability. |
@@ -203,8 +205,8 @@ The Email Service is modeled as an external secondary actor responsible for deli
 - Historical orders must not change after catalog price updates.
 - Checkout must execute inside a database transaction to prevent overselling.
 - Inventory quantities cannot become negative.
----
 
+---
 ## UC-007: Book Showroom Visit (Fully Dressed)
 
 | Field | Detail |
