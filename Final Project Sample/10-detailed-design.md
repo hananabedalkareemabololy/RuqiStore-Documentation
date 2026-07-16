@@ -198,3 +198,153 @@ All checkout operations run within a single shared database transaction.
 If any operation fails, the transaction is rolled back automatically to preserve database consistency.
 
 ---
+# 10.6 API Design (Sample Endpoints)
+
+All endpoints follow RESTful conventions.
+
+Authentication is required via a secure JSON Web Token (JWT) provided in the `Authorization` header.
+
+---
+
+## POST /api/carts/items
+
+**Purpose:**  
+Customer adds a product to their active shopping cart.
+
+| Field | Value |
+|---|---|
+| Method | POST |
+| URL | `/api/carts/items` |
+| Authentication | Bearer JWT (Customer role) |
+| Content-Type | `application/json` |
+
+### Request Body
+
+```json
+{
+  "productId": 204,
+  "quantity": 2
+}
+```
+
+### Success Response (201 Created)
+
+```json
+{
+  "cartItemId": 982,
+  "cartId": 55,
+  "productId": 204,
+  "quantity": 2,
+  "addedAt": "2026-07-16T11:00:00Z"
+}
+```
+
+### Error Responses
+
+| Status | Condition | Body |
+|---|---|---|
+| 400 | Out of stock | `{ "error": "Requested quantity exceeds available inventory." }` |
+| 404 | Product not found | `{ "error": "Target product ID does not exist." }` |
+| 401 | Unauthorized | `{ "error": "Authentication token missing or expired." }` |
+
+---
+## GET /api/orders/{orderId}
+
+**Purpose:**  
+Customer views their finalized purchase invoice and order status.
+
+| Field | Value |
+|---|---|
+| Method | GET |
+| URL | `/api/orders/{orderId}` |
+| Authentication | Bearer JWT (Customer or Administrator role) |
+
+### Success Response (200 OK)
+
+```json
+{
+  "orderId": 4011,
+  "customerId": 88,
+  "orderDate": "2026-07-15T15:30:00Z",
+  "orderStatus": "SHIPPED",
+  "totalAmount": 1250.00,
+  "shippingAddress": "Al-Amal Street, Khan Yunis, Gaza"
+}
+```
+
+### Error Responses
+
+| Status | Condition | Body |
+|---|---|---|
+| 403 | Forbidden | `{ "error": "You do not have permission to view this order." }` |
+| 404 | Not found | `{ "error": "Order ID not found." }` |
+
+---
+## POST /api/showroom/bookings
+
+**Purpose:**  
+Customer schedules a consultation session in the virtual or physical showroom.
+
+| Field | Value |
+|---|---|
+| Method | POST |
+| URL | `/api/showroom/bookings` |
+| Authentication | Bearer JWT (Customer role) |
+| Content-Type | `application/json` |
+
+### Request Body
+
+```json
+{
+  "bookingDate": "2026-07-20",
+  "bookingTime": "14:00:00",
+  "consultationType": "VIRTUAL_ROOM_DESIGN"
+}
+```
+
+### Success Response (201 Created)
+
+```json
+{
+  "bookingId": 302,
+  "customerId": 88,
+  "bookingDate": "2026-07-20",
+  "bookingTime": "14:00:00",
+  "consultationType": "VIRTUAL_ROOM_DESIGN",
+  "status": "CONFIRMED",
+  "meetingLink": "https://meet.ruqistore.com/showroom/302"
+}
+```
+
+---
+# 10.7 Error Handling Strategy
+
+The Ruqi Store system follows a layered error handling approach to ensure consistent responses, maintain system stability, and protect sensitive internal information.
+
+| Layer | Responsibility | Example Execution |
+|---|---|---|
+| Controller | Intercepts exceptions and returns standardized HTTP responses to clients. | Returns `400` for invalid input, `404` for missing resources, and `500` for unexpected server errors. |
+| Service | Evaluates business rules and throws domain-specific exceptions. | Throws `OutOfStockException` when requested quantity exceeds warehouse availability or `TimeSlotOccupiedException` when a showroom booking conflicts. |
+| Repository | Handles database-related failures and converts low-level database errors into application exceptions. | Converts database constraint violations into `ReferentialIntegrityException`. |
+| Middleware | Handles unhandled application failures globally, records audit information, and hides internal stack traces in production. | Captures unexpected failures, writes diagnostic details into `audit_logs`, and returns a generic server error message. |
+
+---
+
+## System Scalability Considerations
+
+Our system architecture is designed to handle up to **1,000 concurrent shopping sessions** efficiently.
+
+The stateless application layer allows developers to add additional virtual server instances behind the Application Load Balancer.
+
+For example:
+
+- App Instance 1
+- App Instance 2
+- App Instance 3
+- App Instance 4
+
+This enables horizontal scaling during seasonal traffic peaks while maintaining consistent performance and availability.
+
+---
+
+[← Previous: Architecture](./09-architectural-design.md) | [Back to Index](./00-index.md) | [Next: UI/UX Design →](./11-ui-ux-design.md)
