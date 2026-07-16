@@ -199,3 +199,116 @@ public class CheckoutDto
 
     public string ContactPhoneNumber { get; set; }
 }
+## C. CartItemDto
+
+**Purpose:**  
+Represents a single product displayed in the shopping cart.
+
+```csharp
+public class CartItemDto
+{
+    public int CartItemId { get; set; }
+
+    public int ProductId { get; set; }
+
+    public string ProductName { get; set; }
+
+    public decimal UnitPrice { get; set; }
+
+    public int Quantity { get; set; }
+
+    public decimal SubTotal => UnitPrice * Quantity;
+}
+# 10.5 System Validation & Business Rules
+
+Before any checkout transaction is committed, the following validation rules and pipeline operations are strictly enforced.
+
+## Checkout Validation Pipeline
+
+| Step | Validation Action |
+|---|---|
+| 1 | Verify product stock availability in the warehouse. |
+| 2 | Read the live product price from the catalog. |
+| 3 | Save and freeze the price inside `OrderItem.PriceSnapshot`. |
+| 4 | Generate the base `Order` record. |
+| 5 | Generate all associated `OrderItem` records. |
+| 6 | Deduct physical inventory stock quantities. |
+| 7 | Flush and clear the user's active shopping cart session. |
+| 8 | Commit the transaction atomically. |
+
+---
+## Checkout Workflow
+
+```mermaid
+flowchart TD
+    A[Checkout Request] --> B[Verify Stock]
+    B --> C[Freeze Product Prices]
+    C --> D[Create Order]
+    D --> E[Create Order Items]
+    E --> F[Update Inventory]
+    F --> G[Clear Shopping Cart]
+    G --> H[Commit Transaction]
+    H --> I[Return Success Response]
+
+    style A fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    style H fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+    style I fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+### Stock Verification
+
+Before creating an order, the application verifies the available inventory for every product in the shopping cart.
+
+If the requested quantity exceeds the available stock, the checkout process is cancelled and a validation error is returned.
+
+---
+
+### Price Snapshot Pattern
+
+During checkout, the current product price is copied into the `OrderItem.PriceSnapshot` field.
+
+This ensures historical transaction and financial data remains accurate even if catalog prices change later.
+
+---
+
+### Atomic Transactions
+
+All checkout operations run within a single shared database transaction.
+
+If any operation fails, the transaction is rolled back automatically to preserve database consistency.
+
+# 10.6 API Design (Sample Endpoints)
+
+All endpoints follow RESTful conventions.
+
+Authentication is required via a secure JSON Web Token (JWT) provided in the `Authorization` header.
+
+---
+
+## POST /api/carts/items
+
+**Purpose:**  
+Customer adds a product to their active shopping cart.
+
+| Field | Value |
+|---|---|
+| Method | POST |
+| URL | `/api/carts/items` |
+| Authentication | Bearer JWT (Customer role) |
+| Content-Type | `application/json` |
+
+### Request Body
+
+```json
+{
+  "productId": 204,
+  "quantity": 2
+}
+### Success Response (201 Created)
+
+```json
+{
+  "cartItemId": 982,
+  "cartId": 55,
+  "productId": 204,
+  "quantity": 2,
+  "addedAt": "2026-07-16T11:00:00Z"
+}
