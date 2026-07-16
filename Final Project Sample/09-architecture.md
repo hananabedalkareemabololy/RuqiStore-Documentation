@@ -39,7 +39,6 @@ graph TB
     BL --> Cache
     BL --> SMTP
     BL --> Pay
-
 ## 9.2 Technology Stack
 
 | Layer | Technology | Justification |
@@ -52,7 +51,6 @@ graph TB
 | Authentication | JWT + bcrypt | Stateless secure authorization for active sessions and industry-standard salted password hashing. |
 | API Style | RESTful | Clean resource-oriented HTTP routing, easy integration, and well-supported testing suites. |
 | External Integrations | SendGrid & Stripe | Reliable transactional email notifications and secure, PCI-compliant payment card processing. |
-
 ## 9.3 Component Diagram
 
 This diagram displays the structural components of Ruqi Store and how requests propagate from public UI components down to database repositories.
