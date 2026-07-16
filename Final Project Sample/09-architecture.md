@@ -56,3 +56,59 @@ graph TB
 | Authentication | JWT + bcrypt | Stateless secure authorization and industry-standard salted password hashing. |
 | API Style | RESTful API | Clean resource-oriented HTTP routing with easy integration and strong testing support. |
 | External Integrations | SendGrid & Stripe | Reliable transactional email notifications and secure PCI-compliant payment processing. |
+
+## 9.3 Component Diagram
+
+This diagram displays the structural components of Ruqi Store and how requests propagate from public UI components down to database repositories.
+
+```mermaid
+graph LR
+
+    subgraph Frontend["Frontend Client (React)"]
+        Login["Login / Profile"]
+        Home["Catalog Home"]
+        CartUI["Shopping Cart View"]
+        CheckoutUI["Checkout Page"]
+        ShowroomUI["Showroom Scheduler"]
+    end
+
+    subgraph Backend["Backend API Controllers"]
+        AuthC["Auth Controller"]
+        ProdC["Product Controller"]
+        CartC["Cart Controller"]
+        OrdC["Order Controller"]
+        ShowC["Showroom Controller"]
+    end
+
+    subgraph Services["Business Logic Services"]
+        AuthS["Identity Service"]
+        StockS["Inventory Service"]
+        CartS["Cart Service"]
+        OrderS["Order Processing Service"]
+        BookS["Appointment Service"]
+        MailS["Notification Service"]
+        PayS["Payment Integration Service"]
+    end
+
+    subgraph Data["Data Access Repositories"]
+        UserR["User Repository"]
+        ProdR["Product Repository"]
+        CartR["Cart Repository"]
+        OrderR["Order Repository"]
+        BookR["Appointment Repository"]
+    end
+
+    Frontend -->|REST API Calls| Backend
+    Backend --> Services
+    Services --> Data
+
+    MailS -->|SMTP| SendGrid["SendGrid API"]
+    PayS -->|HTTPS| Stripe["Stripe SDK"]
+
+    ProdC -->|S3 Upload| S3[("AWS S3 Bucket")]
+    Data --> DB[("SQL Server")]
+
+    style Frontend fill:#e3f2fd,stroke:#1e88e5
+    style Backend fill:#fff3e0,stroke:#f57c00
+    style Services fill:#e8f5e9,stroke:#43a047
+    style Data fill:#f5f5f5,stroke:#9e9e9e
