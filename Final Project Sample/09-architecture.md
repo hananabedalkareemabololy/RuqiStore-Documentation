@@ -1,333 +1,60 @@
-09. Architectural Design
+# 09. Architectural Design
 
-9.1 Architecture Pattern: Three-Tier Architecture
+## 9.1 Architecture Pattern: Three-Tier
 
-Ruqi Store follows a Three-Tier Layered Architecture that separates the system into three main layers:
+Ruqi Store uses a **three-tier (layered) architecture**, separating the system into Presentation, Business Logic, and Data tiers. This pattern guarantees clean separation of concerns, allows independent scaling of individual tiers, and matches the requirements of a high-performance e-commerce catalog and transaction system.
 
-1. Presentation Layer
-2. Business Logic Layer
-3. Data Access Layer
-
-This architecture improves maintainability, scalability, testing, and separation of responsibilities.
-
+```mermaid
 graph TB
 
-    subgraph Presentation["Presentation Layer"]
-        UI["ASP.NET Core MVC Views"]
-        Client["Web Browser / Mobile Browser"]
+    subgraph Presentation["Presentation Tier (Client)"]
+        Browser["Web/Mobile Browser"]
+        React["React.js SPA / Client UI"]
     end
 
-    subgraph Business["Business Logic Layer"]
-        Controllers["MVC Controllers"]
-        Services["Business Services"]
-        Validation["Validation & Business Rules"]
+    subgraph Logic["Business Logic Tier (Server)"]
+        API["REST API - Node.js / Express"]
+        Auth["Authentication Middleware - JWT"]
+        BL["Business Services & Workflows"]
+        Val["Validation & Policy Layer"]
     end
 
-    subgraph Data["Data Access Layer"]
-        Repository["Repository Layer"]
-        EF["Entity Framework Core"]
-        Database[("SQL Server Database")]
+    subgraph Data["Data Tier"]
+        DB[("SQL Server Database")]
+        FileStore[("File Storage - AWS S3")]
+        Cache[("Redis Cache")]
     end
 
     subgraph External["External Services"]
-        Payment["Payment Gateway"]
-        Email["Email Notification Service"]
-        Storage["File Storage"]
+        SMTP["Email Service - SendGrid"]
+        Pay["Payment Gateway - Stripe"]
     end
 
-
-    Client --> UI
-    UI --> Controllers
-    Controllers --> Services
-    Services --> Validation
-    Services --> Repository
-    Repository --> EF
-    EF --> Database
-
-    Services --> Payment
-    Services --> Email
-    Services --> Storage
-
----
-
-9.2 Layer Responsibilities
-
-Layer| Technology| Responsibility
-Presentation Layer| ASP.NET Core MVC + Razor Views| Handles user interaction, pages, forms, and displaying data.
-Business Logic Layer| C# Services| Contains business rules, checkout workflow, inventory validation, and booking logic.
-Data Access Layer| Entity Framework Core + Repository Pattern| Handles database communication and CRUD operations.
-Database| SQL Server| Stores users, products, carts, orders, reviews, and transactions.
-Authentication| ASP.NET Identity| Provides secure login, registration, and role management.
-File Storage| Local Storage / Cloud Storage| Stores product images and uploaded assets.
-
----
-
-9.3 Component Diagram
-
-The component diagram represents the internal software components and their communication flow.
-
-graph LR
-
-subgraph Frontend["Presentation Layer"]
-
-Login["Login/Register Views"]
-
-Catalog["Product Catalog Views"]
-
-Cart["Shopping Cart Views"]
-
-Checkout["Checkout Views"]
-
-Showroom["Showroom Booking Views"]
-
-end
-
-
-subgraph Controllers["MVC Controllers"]
-
-AuthController["Account Controller"]
-
-ProductController["Product Controller"]
-
-CartController["Cart Controller"]
-
-OrderController["Order Controller"]
-
-BookingController["Showroom Controller"]
-
-end
-
-
-subgraph Services["Business Services"]
-
-UserService["User Service"]
-
-ProductService["Product Service"]
-
-CartService["Cart Service"]
-
-OrderService["Order Service"]
-
-InventoryService["Inventory Service"]
-
-BookingService["Appointment Service"]
-
-end
-
-
-subgraph Repository["Repository Layer"]
-
-UserRepo["User Repository"]
-
-ProductRepo["Product Repository"]
-
-OrderRepo["Order Repository"]
-
-CartRepo["Cart Repository"]
-
-BookingRepo["Booking Repository"]
-
-end
-
-
-Database[("SQL Server")]
-
-
-Frontend --> Controllers
-
-Controllers --> Services
-
-Services --> Repository
-
-Repository --> Database
-
----
-
-9.4 Architectural Decisions
-
-Decision| Selected Approach| Alternative| Reason
-Architecture Pattern| Three-Tier Architecture| Microservices| Suitable for a medium-size e-commerce system and easier deployment.
-Backend Framework| ASP.NET Core MVC| Node.js Express| Matches project requirements and provides strong integration with SQL Server and Entity Framework.
-Database| SQL Server| MongoDB| Orders and payments require ACID transactions and relational consistency.
-Data Access| Repository Pattern + EF Core| Direct SQL Queries| Separates business logic from database implementation.
-Authentication| ASP.NET Identity + Roles| Custom Authentication| Provides secure and tested identity management.
-API Communication| RESTful Services| SOAP| Lightweight and easier integration with frontend/mobile applications.
-
----
-
-9.5 Deployment View
-
-The deployment diagram describes the physical deployment environment of the Ruqi Store system.
-
-The system is deployed using a web server environment that hosts the ASP.NET Core application and connects to the SQL Server database.
-
-graph TB
-
-subgraph Client["Client Devices"]
-
-Desktop["Desktop Browser"]
-
-Mobile["Mobile Browser"]
-
-Tablet["Tablet Browser"]
-
-end
-
-
-subgraph Server["Application Server"]
-
-WebServer["ASP.NET Core Web Application"]
-
-MVC["MVC Controllers + Views"]
-
-Services["Business Services"]
-
-Repositories["Repository Layer"]
-
-end
-
-
-subgraph Database["Database Server"]
-
-SQL[("SQL Server Database")]
-
-end
-
-
-subgraph Storage["File Storage"]
-
-Images[("Product Images Storage")]
-
-end
-
-
-subgraph External["External Services"]
-
-Payment["Payment Gateway"]
-
-Email["Email Service"]
-
-end
-
-
-Desktop --> WebServer
-
-Mobile --> WebServer
-
-Tablet --> WebServer
-
-
-WebServer --> MVC
-
-MVC --> Services
-
-Services --> Repositories
-
-Repositories --> SQL
-
-
-Services --> Images
-
-Services --> Payment
-
-Services --> Email
-
----
-
-9.6 Deployment Components Description
-
-Component| Responsibility
-Client Devices| Allow customers and administrators to access the system through browsers.
-ASP.NET Core Application Server| Hosts the web application, controllers, views, and business logic.
-Business Services| Execute application rules such as checkout, inventory validation, and booking management.
-Repository Layer| Provides controlled access to database operations.
-SQL Server Database| Stores persistent application data including users, products, carts, and orders.
-File Storage| Stores product images and uploaded media files.
-Payment Gateway| Handles secure payment processing.
-Email Service| Sends order confirmations and booking notifications.
-
----
-
-9.7 Scalability Considerations
-
-Ruqi Store is designed to support future growth and increased customer traffic.
-
-Horizontal Scaling
-
-The application layer can be expanded by adding additional application servers.
-
-Example:
-
-Application Server 1
-Application Server 2
-Application Server 3
-
-A load balancer can distribute incoming requests between servers.
-
----
-
-Database Optimization
-
-The system improves database performance through:
-
-- Proper indexing on frequently searched fields.
-- Foreign key optimization.
-- Query optimization using Entity Framework Core.
-- Separation of read and write operations when required.
-
----
-
-Caching Strategy
-
-Frequently accessed information can be cached:
-
-Examples:
-
-- Product catalog data.
-- Category lists.
-- Popular furniture items.
-
-A caching mechanism such as Redis can be integrated in future versions.
-
----
-
-9.8 Security Architecture
-
-The system applies multiple security layers:
-
-Security Area| Implementation
-Authentication| ASP.NET Identity with secure password hashing.
-Authorization| Role-Based Access Control (Customer / Administrator).
-Data Protection| HTTPS encrypted communication.
-Database Security| Parameterized queries through Entity Framework Core.
-Password Security| BCrypt/PBKDF2 hashing algorithms.
-Audit Tracking| Audit logs for sensitive administrative actions.
-
----
-
-9.9 Architectural Quality Attributes
-
-Attribute| Implementation
-Maintainability| Separation into Controllers, Services, and Repository layers.
-Scalability| Independent scaling of application components.
-Security| Identity management, authorization, and encrypted communication.
-Reliability| Database transactions prevent inconsistent orders.
-Testability| Services can be tested independently using dependency injection.
-Performance| Database indexing and optional caching improve response time.
-
----
-
-9.10 Summary
-
-The selected three-tier architecture provides a balanced solution for Ruqi Store by combining:
-
-- Clean separation of responsibilities.
-- Strong database consistency.
-- Secure authentication and authorization.
-- Easy future expansion.
-- Maintainable software structure.
-
-This architecture supports the current e-commerce requirements while allowing future growth without major redesign.
-
----
-"← Previous: Database Design" (./08-database-design.md) | "Back to Index" (./00-index.md) | "Next: Detailed Design →" (./10-detailed-design.md)
+    Browser --> React
+    React -->|HTTPS / REST API| API
+    API --> Auth
+    Auth --> BL
+    BL --> Val
+    Val --> DB
+    BL --> FileStore
+    BL --> Cache
+    BL --> SMTP
+    BL --> Pay
+
+    style Presentation fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    style Logic fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Data fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+    style External fill:#fce4ec,stroke:#d81b60,stroke-width:2px
+```
+## 9.2 Technology Stack
+
+| Layer | Technology | Justification |
+| :--- | :--- | :--- |
+| Frontend | React.js | Component-based structure, fast virtual DOM rendering, and a robust ecosystem for dynamic shopping carts. |
+| Backend | Node.js + Express | Event-driven, asynchronous I/O that handles concurrent customer browsing and checkout operations efficiently. |
+| Database | SQL Server (MSSQL) | Strict relational model, robust transaction handling (ACID) for order payments, and deep referential integrity. |
+| Cache | Redis | Temporary session storage, caching frequently accessed catalog products, and maintaining current cart states. |
+| File Storage | AWS S3 | Highly scalable and secure storage for product images, marketing assets, and invoice PDFs. |
+| Authentication | JWT + bcrypt | Stateless secure authorization for active sessions and industry-standard salted password hashing. |
+| API Style | RESTful | Clean resource-oriented HTTP routing, easy integration, and well-supported testing suites. |
+| External Integrations | SendGrid & Stripe | Reliable transactional email notifications and secure, PCI-compliant payment card processing. |
