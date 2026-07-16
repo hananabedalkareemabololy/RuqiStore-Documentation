@@ -179,3 +179,23 @@ public interface ICartService
         string userId
     );
 }
+# 10.4 Data Transfer Objects (DTOs)
+
+DTOs are lightweight classes used to transfer data between application layers without exposing Entity Framework models directly.
+
+---
+
+## A. CheckoutDto
+
+**Purpose:**  
+Carries checkout information from the Presentation Layer to the Business Logic Layer.
+
+```csharp
+public class CheckoutDto
+{
+    public string ShippingAddress { get; set; }
+
+    public string PaymentMethod { get; set; }
+
+    public string ContactPhoneNumber { get; set; }
+}
