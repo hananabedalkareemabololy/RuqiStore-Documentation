@@ -167,8 +167,9 @@ block-beta
     block:header:5
         A["User Activities"]
     end
+
     B1["Access & Profile"] B2["Browsing & Curation"] B3["Purchase Workflow"] B4["Order & Stock Mgmt"] B5["Admin & Auditing"]
-    
+
     C1["US-001 Login"] C2["US-004 Filters"] C3["US-006 Cart Session"] C4["US-008 Stock Sync"] C5["US-012 Audit Trail"]
     D1["US-002 Register"] D2["US-005 Wishlist"] D3["US-007 Price Freeze"] D4["US-009 Order Tracker"] space
     E1["US-003 PW Reset"] space space E10["US-010 Showroom"] E11["US-011 Reviews"]
@@ -178,6 +179,10 @@ block-beta
     style B3 fill:#ff9800,color:#fff
     style B4 fill:#9c27b0,color:#fff
     style B5 fill:#f44336,color:#fff
+```
+
+### Release Plan
+
 * **Release 1 (Sprint 1–3):** Top row — Secure Login, Catalog Filters, Cart Session, Stock Synchronization, Audit Trail.
 * **Release 2 (Sprint 4–6):** Middle row — Customer Registration, Wishlist, Price Snapshots, Order Pipeline Tracking.
 * **Release 3 (Sprint 7–8):** Bottom row — Password Reset, Showroom Calendar, Verified Reviews.
