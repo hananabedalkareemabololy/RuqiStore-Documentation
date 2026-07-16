@@ -129,7 +129,8 @@ graph LR
 
 This physical blueprint displays the production network topology of the Ruqi Store system.
 
-```mermaid
+```
+mermaid
 graph TB
 
     subgraph Client["Client Tier"]
