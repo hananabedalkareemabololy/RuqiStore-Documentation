@@ -72,3 +72,31 @@ graph TD
 ├─────────────┴───────────────────────────────────────────────┤
 │ © 2026 متجر رقي للأثاث الفاخر. جميع الحقوق محفوظة.          │
 └─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ [Ruqi Logo] [Search...]              [AR/English] [🛒 Cart] │
+│ Home | Products | Collections | Showroom | About Us [Profile] │
+├─────────────────────────────────────────────────────────────┤
+│ Home > Showroom > Book Consultation                        │
+│                                                             │
+│ SCHEDULE A CONSULTATION SESSION                            │
+│                                                             │
+│ 1. Select Consultation Type:                               │
+│ (●) Virtual Room Design Consult  ( ) In-Person Showroom     │
+│                                                             │
+│ 2. Select Date & Time:                                     │
+│ Date: [2026-07-20]  (Available Days: Mon - Fri)             │
+│                                                             │
+│ Available Slots:                                           │
+│ [10:00 AM] [11:30 AM] [02:00 PM *Selected]                 │
+│ [03:30 PM] [05:00 PM] [06:30 PM]                            │
+│                                                             │
+│ 3. Design Notes (Optional):                                │
+│ ┌──────────────────────────────────────────────────┐        │
+│ │ I want to design my living room layout...        │        │
+│ └──────────────────────────────────────────────────┘        │
+│                                                             │
+│ [ Confirm Consultation Booking ]                           │
+├─────────────────────────────────────────────────────────────┤
+│ © 2026 Ruqi Premium Furniture. All Rights Reserved.         │
+└─────────────────────────────────────────────────────────────┘
