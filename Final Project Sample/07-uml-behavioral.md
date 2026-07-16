@@ -7,6 +7,7 @@ This diagram illustrates the step-by-step API interactions and database transact
 ```mermaid
 sequenceDiagram
     autonumber
+
     actor C as Customer
     participant UI as Web/Mobile Client
     participant CC as CartController
@@ -16,15 +17,16 @@ sequenceDiagram
     participant ES as EmailService
 
     C->>UI: Click "Proceed to Checkout"
+
     UI->>CC: GET /api/v1/carts/active
     activate CC
-    CC->>DB: SELECT cart & cart_items WHERE userId = active
+    CC->>DB: SELECT cart and cart_items WHERE userId = active
     DB-->>CC: Active cart data with products
     CC-->>UI: 200 OK (Cart payload)
     deactivate CC
 
-    UI->>C: Display Order Summary & Price Snapshot
-    C->>UI: Select shipping & enter payment, click "Confirm Order"
+    UI-->>C: Display Order Summary and Price Snapshot
+    C->>UI: Select shipping and payment then click Confirm Order
 
     UI->>OC: POST /api/v1/orders
     activate OC
@@ -32,42 +34,44 @@ sequenceDiagram
     OC->>IS: validateStockAndReserve(cartItems)
     activate IS
 
-    IS->>DB: SELECT stock_quantity FROM products WHERE id IN (items)
+    IS->>DB: SELECT stock_quantity FROM products
     DB-->>IS: Available stock counts
 
-    alt Stock unavailable for any item
-        IS-->>OC: StockValidationException (Insufficient Stock)
-        OC-->>UI: 400 Bad Request (Error message)
-    else Stock Available
+    alt Stock unavailable
+        IS-->>OC: StockValidationException
+        OC-->>UI: 400 Bad Request
+    else Stock available
         IS-->>OC: Stock Reserved
     end
 
     deactivate IS
 
     OC->>DB: BEGIN TRANSACTION
-    OC->>DB: INSERT INTO orders (userId, total, status=PENDING, shipping_address)
-    DB-->>OC: generated orderId
+    OC->>DB: INSERT INTO orders
+    DB-->>OC: orderId
 
-    loop For each item in cart
-        OC->>DB: INSERT INTO order_items (orderId, productId, priceSnapshot, quantity)
+    loop For each cart item
+        OC->>DB: INSERT INTO order_items
     end
 
-    OC->>DB: UPDATE products SET stock_quantity = stock_quantity - ordered_qty
-    OC->>DB: DELETE FROM cart_items WHERE cartId = activeCartId
+    OC->>DB: UPDATE product stock
+    OC->>DB: DELETE cart items
     OC->>DB: COMMIT TRANSACTION
-    DB-->>OC: Transaction committed successfully
+    DB-->>OC: Transaction committed
 
-    OC->>ES: sendOrderConfirmationEmail(userEmail, orderId)
+    OC->>ES: Send confirmation email
+    OC-->>UI: 201 Created
 
-    OC-->>UI: 201 Created (Order success payload)
     deactivate OC
 
-    UI-->>C: Show confirmation with Order ID & receipt
+    UI-->>C: Display Order Confirmation
 ```
+
+---
 
 ## 7.2 Sequence Diagram: Book Showroom Visit
 
-This diagram tracks the interactions when a customer schedules an appointment to view premium furniture in the physical showroom (UC-007).
+This diagram tracks the interactions when a customer schedules a showroom appointment (UC-007).
 
 ```mermaid
 sequenceDiagram
@@ -80,92 +84,86 @@ sequenceDiagram
     participant DB as Database
     participant NS as NotificationService
 
-    C->>UI: Select showroom & date, click "View Available Times"
+    C->>UI: Select showroom and date
 
-    UI->>SC: GET /api/v1/showrooms/{id}/available-slots?date=YYYY-MM-DD
-
+    UI->>SC: GET available slots
     activate SC
 
-    SC->>AS: getAvailableTimeSlots(showroomId, date)
-
+    SC->>AS: getAvailableTimeSlots()
     activate AS
 
-    AS->>DB: SELECT booked_slots FROM appointments WHERE showroomId = id AND date = selected
-    DB-->>AS: Booked appointments array
+    AS->>DB: Read booked appointments
+    DB-->>AS: Existing bookings
 
-    AS-->>SC: Filtered list of open 1-hour slots
-
+    AS-->>SC: Available time slots
     deactivate AS
 
-    SC-->>UI: 200 OK (Available slots array)
-
+    SC-->>UI: 200 OK
     deactivate SC
 
-    UI-->>C: Render dynamic time-slot grid
+    UI-->>C: Display available slots
 
-    C->>UI: Select slot & click "Confirm Booking"
+    C->>UI: Confirm booking
 
-    UI->>SC: POST /api/v1/showrooms/appointments
-
+    UI->>SC: POST appointment
     activate SC
 
-    SC->>AS: scheduleAppointment(userId, showroomId, date, slot)
-
+    SC->>AS: scheduleAppointment()
     activate AS
 
-    AS->>DB: Check double-booking (SELECT COUNT WHERE slot = selected)
-    DB-->>AS: 0 (No existing booking for this customer/slot)
+    AS->>DB: Check duplicate booking
+    DB-->>AS: No duplicates
 
-    AS->>DB: INSERT INTO appointments (userId, showroomId, date, slot, status=PENDING_APPROVAL)
+    AS->>DB: Insert appointment
     DB-->>AS: appointmentId
 
-    AS->>NS: triggerAdminReviewNotification(appointmentId)
+    AS->>NS: Notify administrator
 
     activate NS
-    NS-->>AS: Event queued
+    NS-->>AS: Notification queued
     deactivate NS
 
-    AS-->>SC: Booking confirmation details
-
+    AS-->>SC: Booking confirmed
     deactivate AS
 
-    SC-->>UI: 201 Created (Appointment receipt payload)
-
+    SC-->>UI: 201 Created
     deactivate SC
 
-    UI-->>C: Show booking pending screen with SMS details
+    UI-->>C: Display booking confirmation
 ```
+
 ## 7.3 Activity Diagram: Order Processing & Checkout
 
-This flow chart details the complete procedural path of the checkout process, covering inventory verification, rollback scenarios, and error handling.
+This flowchart details the checkout process.
 
 ```mermaid
 flowchart TD
-    Start([Start Checkout]) --> A[Retrieve active cart items]
 
-    A --> B{Is cart empty?}
+    Start([Start Checkout]) --> A[Retrieve Active Cart]
 
-    B -->|Yes| C[Display "Empty Cart" warning]
+    A --> B{Cart Empty?}
+
+    B -->|Yes| C[Display Empty Cart]
     C --> End1([End])
 
-    B -->|No| D{Are all items in stock?}
+    B -->|No| D{Items In Stock?}
 
-    D -->|No| E[Highlight out-of-stock items]
-    E --> F[Prompt user to update quantities or remove items]
+    D -->|No| E[Highlight Out of Stock Items]
+    E --> F[Update Cart]
     F --> A
 
-    D -->|Yes| G[Lock stock quantities temporarily]
-    G --> H[Render order summary with Price Snapshot]
+    D -->|Yes| G[Reserve Stock]
+    G --> H[Display Order Summary]
 
-    H --> I{User completes payment?}
+    H --> I{Payment Completed?}
 
-    I -->|No / Cancelled| J[Release locked stock back to inventory]
+    I -->|No| J[Release Reserved Stock]
     J --> End2([End])
 
-    I -->|Yes| K[Create Order & OrderItem records]
-    K --> L[Update physical database stock count]
-    L --> M[Clear user active shopping cart]
-    M --> N[Send receipt and tracking details to customer]
+    I -->|Yes| K[Create Order]
+    K --> L[Update Inventory]
+    L --> M[Clear Shopping Cart]
+    M --> N[Send Receipt]
     N --> End3([End])
 
     style B fill:#ff9800,color:#fff
@@ -178,25 +176,24 @@ flowchart TD
 
 ## 7.4 State Machine Diagram: Order Lifecycle
 
-This state machine tracks the dynamic transitions of an order's status from initial cart checkout up to successful shipping, delivery, or cancellation.
-
 ```mermaid
 stateDiagram-v2
-    [*] --> PendingPayment : Checkout initiated
 
-    PendingPayment --> Paid : Payment gateway authorization success
-    PendingPayment --> Cancelled : Customer cancel or payment timeout (30 min)
+    [*] --> PendingPayment
 
-    Paid --> Processing : Warehouse receives order for packaging
-    Paid --> Refunded : Item unavailable / immediate cancel request
+    PendingPayment --> Paid : Payment Approved
+    PendingPayment --> Cancelled : Payment Timeout
 
-    Processing --> Shipped : Shipping label generated & courier assigned
-    Processing --> Refunded : Quality control failure / stock discrepancy
+    Paid --> Processing
+    Paid --> Refunded
 
-    Shipped --> Delivered : Courier confirms dropoff at customer shipping address
-    Shipped --> Returned : Customer rejects delivery or address unreachable
+    Processing --> Shipped
+    Processing --> Refunded
 
-    Returned --> Refunded : Inventory returned to stock and processed
+    Shipped --> Delivered
+    Shipped --> Returned
+
+    Returned --> Refunded
 
     Delivered --> [*]
     Cancelled --> [*]
@@ -207,46 +204,47 @@ stateDiagram-v2
 
 | State | Description | Allowed Transitions |
 |-------|-------------|---------------------|
-| **PendingPayment** | Order is registered but payment verification is pending. Stock is temporarily locked. | Paid, Cancelled |
-| **Paid** | Payment confirmed by gateway. Order is queued for warehouse processing. | Processing, Refunded |
-| **Processing** | Warehouse operators are picking, packing, and preparing the package. | Shipped, Refunded |
-| **Shipped** | Package has been handed over to the courier partner; tracking ID is active. | Delivered, Returned |
-| **Delivered** | Customer has signed for the delivery. Terminal successful state. | None |
-| **Returned / Cancelled** | Orders that failed to deliver or were abandoned. Stock is returned to active catalog. | Refunded (if paid) |
+| **PendingPayment** | Payment is pending and stock is reserved. | Paid, Cancelled |
+| **Paid** | Payment completed successfully. | Processing, Refunded |
+| **Processing** | Warehouse is preparing the order. | Shipped, Refunded |
+| **Shipped** | Order is with the courier. | Delivered, Returned |
+| **Delivered** | Final successful state. | None |
+| **Returned / Cancelled** | Order cancelled or returned. | Refunded (if paid) |
+
+---
 
 ## 7.5 Activity Diagram: Dynamic Price & Discount Calculation
 
-This diagram models the business logic engine for compiling cart subtotals, applying categorical/coupon discounts, calculating region-based shipping, and generating the final billing total.
-
 ```mermaid
 flowchart TD
-    Start([Begin Price Calculation]) --> A[Sum raw unit prices of CartItems]
 
-    A --> B[Apply active category discounts]
+    Start([Begin Price Calculation]) --> A[Calculate Cart Subtotal]
 
-    B --> C{Has promotional coupon code?}
+    A --> B[Apply Category Discounts]
 
-    C -->|Yes| D{Is promo code valid?}
+    B --> C{Coupon Available?}
 
-    D -->|Yes| E[Apply percentage or flat discount amount]
-    D -->|No| F[Flag invalid code & ignore]
+    C -->|Yes| D{Coupon Valid?}
 
-    C -->|No| G[Identify delivery region]
+    D -->|Yes| E[Apply Discount]
+    D -->|No| F[Ignore Coupon]
+
+    C -->|No| G[Determine Shipping Region]
     E --> G
     F --> G
 
-    G --> H[Calculate shipping costs based on distance and weight]
+    G --> H[Calculate Shipping Cost]
 
-    H --> I{Does subtotal exceed free shipping threshold?}
+    H --> I{Eligible For Free Shipping?}
 
-    I -->|Yes| J[Apply free shipping rebate]
-    I -->|No| K[Append calculated shipping fee to total]
+    I -->|Yes| J[Apply Free Shipping]
+    I -->|No| K[Add Shipping Fee]
 
-    J --> L[Calculate applicable local sales tax]
+    J --> L[Calculate Sales Tax]
     K --> L
 
-    L --> M[Compile and round grand total to 2 decimal places]
-    M --> N[Log static PriceSnapshot for order verification]
+    L --> M[Calculate Grand Total]
+    M --> N[Store Price Snapshot]
     N --> End([End])
 
     style B fill:#2196f3,color:#fff
@@ -259,14 +257,16 @@ flowchart TD
 | Step | Item | Rule Type | Calculation Process | Resulting Subtotal |
 |------|------|-----------|---------------------|-------------------:|
 | 1 | Raw Cart Total | 3 Premium Items | $400.00 + $250.00 + $150.00 | **$800.00** |
-| 2 | Active Promo Code | SUMMER15 (15%) | Subtract 15% of cart subtotal | **$680.00** |
-| 3 | Shipping Assessment | Standard Delivery | Distance exceeds zone limit (+$45.00) | **$725.00** |
-| 4 | Free Shipping Rule | Threshold Check | Since subtotal ($680.00) > $500.00, shipping rebate applied | **-$45.00** |
-| 5 | Sales Tax | Regional Rate (8.25%) | Apply tax to taxable subtotal | **+$56.10** |
-| 6 | Final Price Snapshot | Order Grand Total | Rounded final billing amount | **$736.10** |
+| 2 | Promo Code | SUMMER15 (15%) | Apply 15% discount | **$680.00** |
+| 3 | Shipping | Standard Delivery | Shipping fee +$45.00 | **$725.00** |
+| 4 | Free Shipping | Threshold Rule | Shipping rebate -$45.00 | **-$45.00** |
+| 5 | Sales Tax | 8.25% | Tax +$56.10 | **+$56.10** |
+| 6 | Final Total | Price Snapshot | Rounded total | **$736.10** |
 
 ---
 
-**← Previous:** Domain Model  
-**Back to Index**  
+**← Previous:** Domain Model
+
+**Back to Index**
+
 **Next:** Database Design →
