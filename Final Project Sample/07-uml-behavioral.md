@@ -265,8 +265,4 @@ flowchart TD
 
 ---
 
-**← Previous:** Domain Model
-
-**Back to Index**
-
-**Next:** Database Design →
+[← Previous: Domain Model](./06-domain-model.md) | [Back to Index](./00-index.md) | [Next: Database Design →](./08-database-design.md)
