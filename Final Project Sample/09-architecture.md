@@ -45,6 +45,7 @@ graph TB
     style Logic fill:#fff3e0,stroke:#f57c00,stroke-width:2px
     style Data fill:#e8f5e9,stroke:#43a047,stroke-width:2px
     style External fill:#fce4ec,stroke:#d81b60,stroke-width:2px
+```
 | Layer | Technology | Justification |
 |---|---|---|
 | Frontend | React.js | Component-based structure, fast virtual DOM rendering, and a robust ecosystem for dynamic shopping carts. |
