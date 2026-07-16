@@ -123,3 +123,12 @@ graph LR
     style Data fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
     style External fill:#fce4ec,stroke:#d81b60,stroke-width:2px
 ```
+## 9.4 Architectural Decisions
+
+| Decision Topic | Selected Approach | Alternatives Considered | Rationale |
+| :--- | :--- | :--- | :--- |
+| Architecture Pattern | Three-Tier Monolith | Microservices | Monolith offers rapid deployment and low operational overhead for a mid-sized e-commerce store, avoiding network latency and complex transaction routing. |
+| Frontend Rendering | Single Page App (SPA) | Server-Side Rendering (SSR) | SPA provides seamless state transitions, which is ideal for shopping carts and showroom calendars, while isolating UI processing from the server. |
+| Database System | Relational Database (SQL Server) | NoSQL (MongoDB) | E-commerce checkout requires absolute transaction safety (ACID) to update stock levels and record payments securely without collisions. |
+| Authentication Style | Stateless JWT Tokens | Session Cookies | JWT tokens support horizontal backend scaling without sticky-session overhead and integrate easily with future native mobile applications. |
+| File Hosting | External Storage (AWS S3) | Local Disk Storage | Offloads heavy asset delivery, including high-resolution product and showroom media, from the application server, reducing disk load and improving response times. |
