@@ -63,6 +63,9 @@ public class FixedAmountDiscountStrategy : IDiscountStrategy
         return originalTotal - 50m;
     }
 }
+```
+
+```csharp
 // New strategy can be added without modifying existing checkout logic.
 
 public class FlashSaleDiscountStrategy : IDiscountStrategy
@@ -74,36 +77,4 @@ public class FlashSaleDiscountStrategy : IDiscountStrategy
         return originalTotal * 0.80m;
     }
 }
-## B. ICartService
-
-**Responsibility:**  
-Manages the user's active shopping cart and validates inventory before checkout.
-
-```csharp
-public interface ICartService
-{
-    Task<CartDto> GetActiveCartAsync(
-        string userId
-    );
-
-    Task<bool> AddToCartAsync(
-        string userId,
-        int productId,
-        int quantity
-    );
-
-    Task<bool> UpdateCartItemQuantityAsync(
-        string userId,
-        int cartItemId,
-        int newQuantity
-    );
-
-    Task<bool> RemoveFromCartAsync(
-        string userId,
-        int cartItemId
-    );
-
-    Task<bool> ClearCartAsync(
-        string userId
-    );
-}
+```
