@@ -112,6 +112,7 @@ graph LR
     style Backend fill:#fff3e0,stroke:#f57c00
     style Services fill:#e8f5e9,stroke:#43a047
     style Data fill:#f5f5f5,stroke:#9e9e9e
+```
 ## 9.4 Architectural Decisions
 
 | Decision Topic | Selected Approach | Alternatives Considered | Rationale |
