@@ -58,3 +58,68 @@ graph TB
 | Authentication | JWT + bcrypt | Stateless secure authorization for active sessions and industry-standard salted password hashing. |
 | API Style | RESTful | Clean resource-oriented HTTP routing, easy integration, and well-supported testing suites. |
 | External Integrations | SendGrid & Stripe | Reliable transactional email notifications and secure, PCI-compliant payment card processing. |
+## 9.3 Component Diagram
+
+This diagram displays the structural components of Ruqi Store and how requests propagate from public UI components down to database repositories.
+
+```mermaid
+graph LR
+
+    subgraph Frontend["Frontend Client (React)"]
+        Login["Login / Profile"]
+        Home["Catalog Home"]
+        CartUI["Shopping Cart View"]
+        CheckoutUI["Checkout Page"]
+        ShowroomUI["Showroom Scheduler"]
+    end
+
+    subgraph Backend["Backend API Controllers"]
+        AuthC["Auth Controller"]
+        ProdC["Product Controller"]
+        CartC["Cart Controller"]
+        OrdC["Order Controller"]
+        ShowC["Showroom Controller"]
+    end
+
+    subgraph Services["Business Logic Services"]
+        AuthS["Identity Service"]
+        StockS["Inventory Service"]
+        CartS["Cart Service"]
+        OrderS["Order Processing Service"]
+        BookS["Appointment Service"]
+        MailS["Notification Service"]
+        PayS["Payment Integration Service"]
+    end
+
+    subgraph Data["Data Access Repositories"]
+        UserR["User Repository"]
+        ProdR["Product Repository"]
+        CartR["Cart Repository"]
+        OrderR["Order Repository"]
+        BookR["Appointment Repository"]
+    end
+
+    subgraph External["External Integrations"]
+        SendGrid["SendGrid API"]
+        Stripe["Stripe SDK"]
+        S3[("AWS S3 Bucket")]
+    end
+
+    DB[("SQL Server Database")]
+
+    Frontend -->|REST API Calls| Backend
+    Backend --> Services
+    Services --> Data
+
+    MailS -->|SMTP| SendGrid
+    PayS -->|HTTPS| Stripe
+    ProdC -->|Upload / Retrieve Media| S3
+
+    Data --> DB
+
+    style Frontend fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    style Backend fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Services fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+    style Data fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
+    style External fill:#fce4ec,stroke:#d81b60,stroke-width:2px
+```
