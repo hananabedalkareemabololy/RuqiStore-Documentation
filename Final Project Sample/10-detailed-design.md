@@ -65,3 +65,26 @@ public class FlashSaleDiscountStrategy : IDiscountStrategy
         return originalTotal * 0.20m;
     }
 }
+
+### Dependency Inversion Principle (DIP)
+
+High-level application controllers depend on abstractions rather than concrete service implementations.
+
+This separates dependencies and allows easy unit testing using mock services.
+
+```csharp
+public class OrderController : ControllerBase
+{
+    private readonly IOrderService _orderService;
+
+    public OrderController(IOrderService orderService)
+    {
+        _orderService = orderService;
+    }
+}
+
+// Production runtime:
+// new OrderController(new OrderService(databaseContext))
+
+// Testing runtime:
+// new OrderController(new MockOrderService())
