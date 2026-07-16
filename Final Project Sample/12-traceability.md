@@ -41,3 +41,5 @@ This matrix maps system constraints, performance, and accessibility targets to t
 * **Verification of Code:** No controller endpoint or frontend view should be built unless it maps back to at least one **Req ID** in this matrix.
 * **Database Integrity:** Foreign keys mapped in `04_DATABASE_DESIGN.md` are actively checked against the Domain Relationships defined in `06-domain-model.md` to prevent dangling references during operations.
 * **UX Continuity:** Design feedback mechanisms (like toast alerts and loading spinners) are aligned with the asynchronous operations documented in `07-uml-behavioral.md` to maintain system transparency.
+```
+[← Previous: UI/UX Design](./11-ui-ux-design.md) | [Back to Index](./00-index.md) | [Next: Appendices →](./13-appendices.md)
