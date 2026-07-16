@@ -128,9 +128,7 @@ graph LR
 ## 9.5 Deployment View
 
 This physical blueprint displays the production network topology of the Ruqi Store system.
-
-```
-mermaid
+```mermaid
 graph TB
 
     subgraph Client["Client Tier"]
@@ -150,8 +148,8 @@ graph TB
     end
 
     subgraph DataStores["Data Storage Layer"]
-        DB_Primary[("SQL Server Primary")]
-        DB_Replica[("SQL Server Replica - Read Only")]
+        DBPrimary[("SQL Server Primary")]
+        DBReplica[("SQL Server Replica - Read Only")]
         Redis[("Redis Cluster")]
         S3[("AWS S3 Bucket")]
     end
@@ -160,16 +158,16 @@ graph TB
     Tablet --> CloudFront
     Mobile --> CloudFront
 
-    CloudFront -->|Static Media & Assets| S3
+    CloudFront -->|Static Media and Assets| S3
     CloudFront -->|Dynamic API Requests| LB
 
     LB --> App1
     LB --> App2
 
-    App1 --> DB_Primary
-    App2 --> DB_Primary
+    App1 --> DBPrimary
+    App2 --> DBPrimary
 
-    DB_Primary -.->|Asynchronous Replication| DB_Replica
+    DBPrimary -.->|Asynchronous Replication| DBReplica
 
     App1 --> Redis
     App2 --> Redis
