@@ -1,139 +1,160 @@
-# 09. System Architecture & Design Patterns
+# 09. Architectural Design
 
-## 📌 Overview
+## 9.1 Architecture Pattern: Three-Tier
 
-This document describes the architectural style, design patterns, and structural blueprint of the **Ruqi Store** e-commerce application. The system follows the **N-Tier (Layered) Architecture** pattern to achieve separation of concerns, maintainability, scalability, and testability.
-
----
-
-## 🗺️ Architectural Layer Diagram
-
-The following diagram illustrates the application's layered architecture and the unidirectional flow of dependencies from the presentation layer to the database.
+Ruqi Store uses a **three-tier (layered) architecture**, separating the system into Presentation, Business Logic, and Data tiers. This pattern guarantees clean separation of concerns, allows independent scaling of individual tiers, and matches the requirements of a high-performance e-commerce catalog and transaction system.
 
 ```mermaid
-graph TD
-    %% Layers
-    UI[Presentation Layer<br/>ASP.NET Core MVC / Client UI]
-    BLL[Business Logic Layer<br/>Services & DTOs]
-    DAL[Data Access Layer<br/>Repositories & DbContext]
-    DB[(SQL Server Database)]
+graph TB
+    subgraph Presentation["Presentation Tier (Client)"]
+        Browser[Web/Mobile Browser]
+        React[React.js SPA / Client UI]
+    end
 
-    %% Dependencies
-    UI -->|Uses| BLL
-    BLL -->|Uses| DAL
-    DAL -->|Queries| DB
+    subgraph Logic["Business Logic Tier (Server)"]
+        API[REST API - Node.js / Express]
+        Auth[Authentication Middleware - JWT]
+        BL[Business Services & Workflows]
+        Val[Validation & Policy Layer]
+    end
 
-    %% Styling
-    style UI fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
-    style BLL fill:#007bff,stroke:#0056b3,stroke-width:2px,color:#fff
-    style DAL fill:#ffc107,stroke:#d39e00,stroke-width:2px,color:#000
-    style DB fill:#6c757d,stroke:#5a6268,stroke-width:2px,color:#fff
-```
+    subgraph Data["Data Tier"]
+        DB[(SQL Server Database)]
+        FileStore[(File Storage - AWS S3)]
+        Cache[(Redis Cache)]
+    end
 
----
+    subgraph External["External Services"]
+        SMTP[Email Service - SendGrid]
+        Pay[Payment Gateway - Stripe]
+    end
 
-## 🏛️ Layer Breakdown & Responsibilities
+    Browser --> React
+    React -->|HTTPS / REST API| API
+    API --> Auth
+    Auth --> BL
+    BL --> Val
+    Val --> DB
+    BL --> FileStore
+    BL --> Cache
+    BL --> SMTP
+    BL --> Pay
 
-### 1. Presentation Layer (ASP.NET Core MVC / Web API)
+## 9.2 Technology Stack
 
-**Role**
+| Layer | Technology | Justification |
+|---|---|---|
+| Frontend | React.js | Component-based structure, fast virtual DOM rendering, and a robust ecosystem for dynamic shopping carts. |
+| Backend | Node.js + Express | Event-driven, asynchronous I/O that handles concurrent customer browsing and checkout operations efficiently. |
+| Database | SQL Server (MSSQL) | Strict relational model, robust transaction handling (ACID) for order payments, and deep referential integrity. |
+| Cache | Redis | Temporary session storage, caching frequently accessed catalog products and current cart states. |
+| File Storage | AWS S3 | Highly scalable, secure storage for product images, marketing assets, and invoice PDFs. |
+| Authentication | JWT + bcrypt | Stateless secure authorization for active sessions and industry-standard salted password hashing. |
+| API Style | RESTful | Clean resource-oriented HTTP routing, easy integration, and well-supported testing suites. |
+| External Integrations | SendGrid & Stripe | Reliable transactional email notifications and secure, PCI-compliant payment card processing. |
 
-Acts as the application's entry point. It handles HTTP requests, renders views, validates user input, and returns responses to the client.
+## 9.3 Component Diagram
 
-**Key Components**
-
-- **Controllers** – Receive requests, invoke business services, and return Views or JSON responses.
-- **ViewModels** – Lightweight models used for data binding between the UI and the application.
-
----
-
-### 2. Business Logic Layer (BLL / Application Services)
-
-**Role**
-
-Contains the core business logic of the Ruqi Store application. It enforces business rules, validates operations, and coordinates application workflows.
-
-**Key Components**
-
-- **Service Interfaces & Implementations** (e.g., `IOrderService`, `ICartService`) – Handle checkout, inventory validation, order processing, and business rules.
-- **DTOs (Data Transfer Objects)** – Transfer only the required data between layers while protecting domain entities.
-
----
-
-### 3. Data Access Layer (DAL / Infrastructure)
-
-**Role**
-
-Communicates directly with SQL Server and performs all Create, Read, Update, and Delete (CRUD) operations.
-
-**Key Components**
-
-- **ApplicationDbContext** – Entity Framework Core database context.
-- **Repositories** – Encapsulate data access logic and isolate Entity Framework Core from the Business Logic Layer.
-
----
-
-## 🔄 Unidirectional Data Flow Example (Checkout Process)
+This diagram displays the structural components of Ruqi Store and how requests propagate from public UI components down to database repositories.
 
 ```mermaid
-sequenceDiagram
-    autonumber
+graph LR
 
-    actor Customer
-    participant UI as MVC Controller
-    participant BLL as OrderService
-    participant DAL as OrderRepository
-    participant DB as SQL Server
+    subgraph Frontend["Frontend Client (React)"]
+        Login[Login / Profile]
+        Home[Catalog Home]
+        CartUI[Shopping Cart View]
+        CheckoutUI[Checkout Page]
+        ShowroomUI[Showroom Scheduler]
+    end
 
-    Customer->>UI: Submit Checkout Form
-    activate UI
+    subgraph Backend["Backend API Controllers"]
+        AuthC[Auth Controller]
+        ProdC[Product Controller]
+        CartC[Cart Controller]
+        OrdC[Order Controller]
+        ShowC[Showroom Controller]
+    end
 
-    UI->>BLL: CheckoutCart(UserId, OrderDetailsDTO)
-    activate BLL
+    subgraph Services["Business Logic Services"]
+        AuthS[Identity Service]
+        StockS[Inventory Service]
+        CartS[Cart Service]
+        OrderS[Order Processing Service]
+        BookS[Appointment Service]
+        MailS[Notification Service]
+        PayS[Payment Integration Service]
+    end
 
-    BLL->>BLL: Validate Business Rules<br/>(Stock, Prices, Discounts)
+    subgraph Data["Data Access Repositories"]
+        UserR[User Repository]
+        ProdR[Product Repository]
+        CartR[Cart Repository]
+        OrderR[Order Repository]
+        BookR[Appointment Repository]
+    end
 
-    BLL->>DAL: SaveOrder(OrderEntity)
-    activate DAL
+    Frontend -->|REST API Calls| Backend
+    Backend --> Services
+    Services --> Data
 
-    DAL->>DB: Insert Order & Update Stock
-    DB-->>DAL: Success
+    MailS -->|SMTP| SendGrid[SendGrid API]
+    PayS -->|HTTPS| Stripe[Stripe SDK]
+    ProdC -->|S3 Upload| S3[(S3 Bucket)]
+    Data --> DB[(SQL Server Database)]
+## 9.4 Architectural Decisions
 
-    DAL-->>BLL: Return Saved Entity
-    deactivate DAL
+| Decision Topic | Selected Approach | Alternatives Considered | Rationale |
+|---|---|---|---|
+| Architecture Pattern | Three-Tier Monolith | Microservices | Monolith offers rapid deployment and low operational overhead for a mid-sized e-commerce store, avoiding network latency and complex transaction routing. |
+| Frontend Rendering | Single Page App (SPA) | Server-Side Rendering (SSR) | SPA provides seamless state transitions (ideal for shopping carts and showroom calendars) and isolates UI processing from the server. |
+| Database System | Relational (SQL Server) | NoSQL (MongoDB) | E-commerce checkout requires absolute transaction safety (ACID) to update stock levels and record payments securely without collisions. |
+| Authentication Style | Stateless JWT Tokens | Session Cookies | JWT tokens support horizontal backend scaling without sticky-session overhead and integrate easily with future native mobile apps. |
+| File Hosting | External Storage (AWS S3) | Local Disk Storage | Offloads heavy asset delivery (high-resolution product and showroom media) from the app server, reducing disk load and improving server response times. |
+## 9.5 Deployment View
 
-    BLL-->>UI: Return SuccessDTO
-    deactivate BLL
+This physical blueprint displays the production network topography of the Ruqi Store system.
 
-    UI-->>Customer: Display Invoice & Confirmation
-    deactivate UI
-```
+```mermaid
+graph TB
 
----
+    subgraph Client["Client Tier"]
+        PC[Desktop Browser]
+        Tablet[Tablet Browser]
+        Mobile[Mobile Device]
+    end
 
-## ⚙️ Key Architectural Design Patterns
+    subgraph CDN["Content Delivery Network"]
+        CloudFront[AWS CloudFront CDN]
+    end
 
-### Dependency Injection (DI)
+    subgraph WebServer["Application Server Layer"]
+        LB[AWS Application Load Balancer]
+        App1[Node.js Instance 1]
+        App2[Node.js Instance 2]
+    end
 
-Dependency Injection removes hard dependencies by registering services and repositories in `Program.cs`. This improves modularity, maintainability, and unit testing.
+    subgraph DataStores["Data Storage Layer"]
+        DB_Primary[(SQL Server Primary)]
+        DB_Replica[(SQL Server Replica - Read Only)]
+        Redis[(Redis Cluster)]
+        S3[(AWS S3 Bucket)]
+    end
 
-### Repository Pattern
+    Client -->|HTTPS Request| CloudFront
+    CloudFront -->|Static Media & Assets| S3
+    CloudFront -->|Dynamic API Requests| LB
 
-The Repository Pattern abstracts database operations behind repository interfaces, allowing the Business Logic Layer to remain independent of Entity Framework Core.
+    LB --> App1
+    LB --> App2
 
-### Unit of Work
+    App1 --> DB_Primary
+    App2 --> DB_Primary
 
-The Unit of Work pattern groups multiple database operations into a single transaction, ensuring consistency and preventing partial updates during operations such as checkout.
+    DB_Primary -.->|Asynchronous Replication| DB_Replica
 
-### DTO Projection
+    App1 --> Redis
+    App2 --> Redis
 
-DTOs prevent domain entities from being exposed directly to the Presentation Layer. This improves security, reduces over-posting risks, and minimizes unnecessary data transfer.
-
-### Separation of Concerns (SoC)
-
-Each architectural layer has a single responsibility:
-
-- **Presentation Layer** → User interaction
-- **Business Logic Layer** → Business rules and workflows
-- **Data Access Layer** → Database operations
-- **Database** → Persistent data storage
+    App1 --> S3
+    App2 --> S3
