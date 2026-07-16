@@ -48,11 +48,12 @@ classDiagram
         +performSecurityAudit()
     }
 
-
     SystemUser <|-- Customer
     SystemUser <|-- StoreManager
     SystemUser <|-- Accountant
     SystemUser <|-- Administrator
+```
+
 ## 4.2 Use Case Diagram
 
 ```mermaid
@@ -76,13 +77,11 @@ graph TB
 
     end
 
-
     Customer[Customer]
     Manager[Store Manager]
     Accountant[Accountant]
     Admin[Administrator]
     Email[Email Service]
-
 
     Customer --> UC2
     Customer --> UC3
@@ -91,16 +90,12 @@ graph TB
     Customer --> UC6
     Customer --> UC7
 
-
     Manager --> UC8
     Manager --> UC9
 
-
     Accountant --> UC10
 
-
     Admin --> UC11
-
 
     UC3 -.->|include| UC1
     UC4 -.->|include| UC1
@@ -108,12 +103,11 @@ graph TB
     UC6 -.->|include| UC1
     UC7 -.->|include| UC1
 
-
     UC4 -.->|extend| UC12
     UC8 -.->|extend| UC12
 
-
     UC12 --> Email
+```
 ## Relationships Explained
 
 ### Include Relationship (Login and Session Management)
@@ -147,8 +141,6 @@ The Email Service is modeled as an external secondary actor responsible for deli
 
 # 4.3 Use Case Descriptions
 
----
-
 ## UC-004: Checkout and Place Order (Fully Dressed)
 
 | Field | Detail |
@@ -159,7 +151,7 @@ The Email Service is modeled as an external secondary actor responsible for deli
 | **Description** | A registered customer reviews their shopping cart, provides shipping information, and finalizes the purchase while the system locks prices, updates inventory, and creates an order record. |
 | **Preconditions** | Customer is logged in; cart contains at least one active item; all products have sufficient stock availability. |
 | **Postconditions** | Order is created; product prices are frozen; inventory quantities are reduced; cart is cleared; invoice is generated; confirmation email is queued. |
-| **Trigger** | Customer clicks "Proceed to Checkout." |
+| **Trigger** | Customer clicks **"Proceed to Checkout."** |
 
 ---
 
@@ -167,15 +159,15 @@ The Email Service is modeled as an external secondary actor responsible for deli
 
 | Step | Action |
 |------|--------|
-| 1 | Customer reviews cart contents and selects "Proceed to Checkout." |
+| 1 | Customer reviews cart contents and selects **"Proceed to Checkout."** |
 | 2 | System requests shipping address and billing information. |
 | 3 | Customer enters valid information and confirms the order. |
 | 4 | System starts a database transaction. |
 | 5 | System locks product records and validates stock availability. |
 | 6 | System deducts purchased quantities from inventory. |
-| 7 | System stores current product prices as PriceSnapshot values. |
+| 7 | System stores current product prices as `PriceSnapshot` values. |
 | 8 | System removes purchased items from the shopping cart. |
-| 9 | System commits the transaction and creates an invoice with Pending Payment status. |
+| 9 | System commits the transaction and creates an invoice with **Pending Payment** status. |
 | 10 | System displays confirmation details and sends an order notification email. |
 
 ---
@@ -185,7 +177,7 @@ The Email Service is modeled as an external secondary actor responsible for deli
 | ID | Condition | Steps |
 |----|-----------|-------|
 | A1 | Customer has no saved address | System requests a new address, validates it, saves it, and continues checkout. |
-| A2 | Customer modifies cart before payment | System recalculates totals and validates stock again before continuing. |
+| A2 | Customer modifies the cart before payment | System recalculates totals and validates stock again before continuing. |
 
 ---
 
@@ -215,9 +207,9 @@ The Email Service is modeled as an external secondary actor responsible for deli
 | **Name** | Book Showroom Visit |
 | **Actor** | Customer |
 | **Description** | Customer schedules a showroom appointment to physically view furniture products and select a suitable visit time. |
-| **Preconditions** | Customer is authenticated; selected showroom location exists; requested time slot is available; booking is within business hours. |
-| **Postconditions** | Appointment record is created; booking status becomes Pending Approval; store manager receives notification. |
-| **Trigger** | Customer selects "Book Showroom Visit." |
+| **Preconditions** | Customer is authenticated; the selected showroom location exists; the requested time slot is available; booking is within business hours. |
+| **Postconditions** | Appointment record is created; booking status becomes **Pending Approval**; the store manager receives a notification. |
+| **Trigger** | Customer selects **"Book Showroom Visit."** |
 
 ---
 
@@ -227,11 +219,11 @@ The Email Service is modeled as an external secondary actor responsible for deli
 |------|--------|
 | 1 | Customer selects a showroom location. |
 | 2 | System displays available dates and time slots. |
-| 3 | Customer chooses a preferred slot and confirms booking. |
+| 3 | Customer chooses a preferred slot and confirms the booking. |
 | 4 | System validates slot availability. |
 | 5 | System creates an appointment record in the database. |
-| 6 | System assigns Pending Approval status. |
-| 7 | System displays booking confirmation details. |
+| 6 | System assigns **Pending Approval** status. |
+| 7 | System displays the booking confirmation details. |
 | 8 | System notifies the store manager about the new appointment request. |
 
 ---
@@ -240,8 +232,8 @@ The Email Service is modeled as an external secondary actor responsible for deli
 
 | ID | Condition | Steps |
 |----|-----------|-------|
-| A1 | Customer edits booking | Customer selects another available slot and updates appointment details. |
-| A2 | Customer cancels booking | System updates appointment status to Cancelled and releases the time slot. |
+| A1 | Customer edits the booking | Customer selects another available slot and updates the appointment details. |
+| A2 | Customer cancels the booking | System updates the appointment status to **Cancelled** and releases the time slot. |
 
 ---
 
@@ -249,8 +241,8 @@ The Email Service is modeled as an external secondary actor responsible for deli
 
 | ID | Condition | Steps |
 |----|-----------|-------|
-| E1 | Double booking detected | System rejects the request and asks customer to select another available slot. |
-| E2 | Showroom unavailable | System informs customer that the selected showroom cannot accept bookings currently. |
+| E1 | Double booking detected | System rejects the request and asks the customer to select another available slot. |
+| E2 | Showroom unavailable | System informs the customer that the selected showroom cannot accept bookings currently. |
 
 ---
 
@@ -270,9 +262,9 @@ The Email Service is modeled as an external secondary actor responsible for deli
 | **Name** | Submit Verified Product Review |
 | **Actor** | Customer |
 | **Description** | Customer submits a rating and review only for products they have purchased and received. |
-| **Preconditions** | Customer is logged in; product exists in a delivered order; customer has not reviewed the product before. |
-| **Postconditions** | Review record is stored; review status becomes Pending Moderation. |
-| **Trigger** | Customer opens a purchased product page and selects "Write Review." |
+| **Preconditions** | Customer is logged in; the product exists in a delivered order; the customer has not reviewed the product before. |
+| **Postconditions** | Review record is stored; review status becomes **Pending Moderation**. |
+| **Trigger** | Customer opens a purchased product page and selects **"Write Review."** |
 
 ---
 
@@ -281,18 +273,18 @@ The Email Service is modeled as an external secondary actor responsible for deli
 | Step | Action |
 |------|--------|
 | 1 | Customer opens the product details page. |
-| 2 | System verifies customer purchase history. |
-| 3 | Customer enters rating from 1 to 5 stars and writes review text. |
+| 2 | System verifies the customer's purchase history. |
+| 3 | Customer enters a rating from **1 to 5 stars** and writes the review text. |
 | 4 | System checks for duplicate reviews. |
 | 5 | Customer submits the review. |
-| 6 | System saves the review with Pending Moderation status for administrator approval. |
+| 6 | System saves the review with **Pending Moderation** status for administrator approval. |
 
 ---
 
 ### Validation Rules
 
 - Customer must be authenticated.
-- Product must exist in a Delivered order.
+- Product must exist in a **Delivered** order.
 - Each customer can submit only one review per product.
 - Reviews require moderation before public display.
 
