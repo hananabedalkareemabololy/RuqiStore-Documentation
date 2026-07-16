@@ -101,3 +101,42 @@ new OrderController(
 new OrderController(
     new MockOrderService()
 );
+# 10.3 Service Contracts & Interfaces
+
+These interfaces define the communication contracts between the Presentation Layer and the Business Logic Layer.
+
+Controllers communicate only through interfaces, allowing implementations to be replaced without affecting higher system layers.
+
+---
+
+## A. IOrderService
+
+**Responsibility:**  
+Handles the complete order lifecycle, including checkout execution, order retrieval, and order status management.
+
+```csharp
+public interface IOrderService
+{
+    // Executes checkout process.
+    Task<OrderResponseDto> PlaceOrderAsync(
+        string userId,
+        CheckoutDto checkoutDetails
+    );
+
+    // Retrieves order details.
+    Task<OrderDetailsDto> GetOrderByIdAsync(
+        int orderId,
+        string userId
+    );
+
+    // Returns customer's order history.
+    Task<IEnumerable<OrderSummaryDto>> GetUserOrderHistoryAsync(
+        string userId
+    );
+
+    // Updates order status (Admin only).
+    Task<bool> UpdateOrderStatusAsync(
+        int orderId,
+        string status
+    );
+}
