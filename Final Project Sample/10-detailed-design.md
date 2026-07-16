@@ -132,3 +132,66 @@ graph LR
 | Database System | Relational Database (SQL Server) | NoSQL (MongoDB) | E-commerce checkout requires absolute transaction safety (ACID) to update stock levels and record payments securely without collisions. |
 | Authentication Style | Stateless JWT Tokens | Session Cookies | JWT tokens support horizontal backend scaling without sticky-session overhead and integrate easily with future native mobile applications. |
 | File Hosting | External Storage (AWS S3) | Local Disk Storage | Offloads heavy asset delivery, including high-resolution product and showroom media, from the application server, reducing disk load and improving response times. |
+
+## 9.5 Deployment View
+
+This physical blueprint displays the production network topology of the Ruqi Store system.
+
+```mermaid
+graph TB
+
+    subgraph Client["Client Tier"]
+        PC["Desktop Browser"]
+        Tablet["Tablet Browser"]
+        Mobile["Mobile Device"]
+    end
+
+    subgraph CDN["Content Delivery Network"]
+        CloudFront["AWS CloudFront CDN"]
+    end
+
+    subgraph WebServer["Application Server Layer"]
+        LB["AWS Application Load Balancer"]
+        App1["Node.js Instance 1"]
+        App2["Node.js Instance 2"]
+    end
+
+    subgraph DataStores["Data Storage Layer"]
+        DB_Primary[("SQL Server Primary")]
+        DB_Replica[("SQL Server Replica - Read Only")]
+        Redis[("Redis Cluster")]
+        S3[("AWS S3 Bucket")]
+    end
+
+    PC -->|HTTPS Request| CloudFront
+    Tablet -->|HTTPS Request| CloudFront
+    Mobile -->|HTTPS Request| CloudFront
+
+    CloudFront -->|Static Media & Assets| S3
+    CloudFront -->|Dynamic API Requests| LB
+
+    LB --> App1
+    LB --> App2
+
+    App1 --> DB_Primary
+    App2 --> DB_Primary
+
+    DB_Primary -.->|Asynchronous Replication| DB_Replica
+
+    App1 --> Redis
+    App2 --> Redis
+
+    App1 --> S3
+    App2 --> S3
+
+    style Client fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    style CDN fill:#fce4ec,stroke:#d81b60,stroke-width:2px
+    style WebServer fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style DataStores fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+```
+
+Our system architecture is designed to handle up to 1,000 concurrent shopping sessions with ease. The stateless application layer allows developers to add more virtual server instances (App Instance 3, 4, etc.) behind the Application Load Balancer to scale capacity horizontally whenever seasonal traffic peaks.
+
+---
+
+[← Previous: Database Design](./08-database-design.md) | [Back to Index](./00-index.md) | [Next: Detailed Design →](./10-detailed-design.md)
