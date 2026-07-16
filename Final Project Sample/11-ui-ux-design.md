@@ -119,3 +119,19 @@ To ensure a highly inclusive and responsive design, the following accessibility 
 | **Scale & Responsive Layouts** | Base fonts are set to 16px to guarantee clean readability. Elements scale cleanly up to 200% zoom without breaks. Grids adjust dynamically from 1920px desktop to 320px mobile screens. |
 
 ---
+## 11.5 UI Component Standards
+
+The following design system rules ensure visual excellence and structural consistency throughout the store:
+
+| Component | Specification |
+|-----------|---------------|
+| **Primary Button** | Deep Navy Blue (`#1A2B4C`), white text, 4px minimal border radius, minimum height of 48px to allow touch-friendly interaction. |
+| **Secondary Button** | Transparent background, solid 1px border of `#1A2B4C`, dark navy text. Focus state triggers light gray fills (`#F5F5F5`). |
+| **Form Inputs** | Off-white background, 1px border (`#D1D1D1`), 4px border radius, clear dark gray placeholder text, transitioning to `#1A2B4C` border on focus. |
+| **Product Cards** | Clean white backgrounds with subtle drop shadows, 0px rounded corners for a modern look, structured typography, and instant visual zoom on image hover. |
+| **Toast Notifications** | Displayed in the top-end corner. Auto-dismisses within 4 seconds. Solid green (`#2E7D32`) for success alerts and solid red (`#C62828`) for errors. |
+| **Loading Experience** | Integrated Skeleton Screen loaders match the card outlines to maintain layout stability and prevent content shifts (CLS) during API fetching. |
+
+---
+
+[← Previous: Detailed Class Design](./10-detailed-class-design.md) | [Back to Index](./00-index.md) | [Next: Traceability Matrix](./12-traceability-matrix.md)
