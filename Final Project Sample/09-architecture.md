@@ -179,8 +179,4 @@ graph TB
     style CDN fill:#fce4ec
     style WebServer fill:#fff3e0
     style DataStores fill:#e8f5e9
-Our system architecture is designed to handle up to 1,000 concurrent shopping sessions with ease. The stateless application layer allows developers to add more virtual server instances (App Instance 3, 4, etc.) behind the Application Load Balancer to scale capacity horizontally whenever seasonal traffic peaks.
 
----
-
-[← Previous: Database Design](./08-database-design.md) | [Back to Index](./00-index.md) | [Next: Detailed Design →](./10-detailed-design.md)
