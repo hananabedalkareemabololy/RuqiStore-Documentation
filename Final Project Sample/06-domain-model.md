@@ -200,4 +200,4 @@ classDiagram
 
 ---
 
-← **Previous:** User Stories | **Back to Index** | **Next:** UML Behavioral Models →
+[← Previous: User Stories](./05-user-stories.md) | [Back to Index](./README.md) | [Next: UML Behavioral Models →](./07-uml-behavioral.md)
