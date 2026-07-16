@@ -112,3 +112,70 @@ graph LR
     style Backend fill:#fff3e0,stroke:#f57c00
     style Services fill:#e8f5e9,stroke:#43a047
     style Data fill:#f5f5f5,stroke:#9e9e9e
+## 9.4 Architectural Decisions
+
+| Decision Topic | Selected Approach | Alternatives Considered | Rationale |
+|---|---|---|---|
+| Architecture Pattern | Three-Tier | Microservices | A three-tier architecture provides rapid deployment and lower operational overhead for a mid-sized e-commerce store while avoiding network latency and complex transaction routing. |
+| Frontend Rendering | Single Page Application (SPA) | Server-Side Rendering (SSR) | SPA provides seamless state transitions, making it ideal for shopping carts, interactive catalogs, and showroom scheduling features while keeping UI processing separate from the server. |
+| Database System | Relational Database (SQL Server) | NoSQL (MongoDB) | E-commerce checkout requires strong transaction safety (ACID) to update inventory levels and process payments securely without conflicts. |
+| Authentication Style | Stateless JWT Tokens | Session Cookies | JWT tokens support horizontal backend scaling without sticky-session requirements and integrate easily with future mobile applications. |
+| File Hosting | External Storage (AWS S3) | Local Disk Storage | External storage reduces application server load by handling large product images, marketing assets, and showroom media efficiently. |
+
+---
+
+## 9.5 Deployment View
+
+This physical blueprint displays the production network topology of the Ruqi Store system.
+
+```mermaid
+graph TB
+
+    subgraph Client["Client Tier"]
+        PC["Desktop Browser"]
+        Tablet["Tablet Browser"]
+        Mobile["Mobile Device"]
+    end
+
+    subgraph CDN["Content Delivery Network"]
+        CloudFront["AWS CloudFront CDN"]
+    end
+
+    subgraph WebServer["Application Server Layer"]
+        LB["AWS Application Load Balancer"]
+        App1["Node.js Instance 1"]
+        App2["Node.js Instance 2"]
+    end
+
+    subgraph DataStores["Data Storage Layer"]
+        DB_Primary[("SQL Server Primary")]
+        DB_Replica[("SQL Server Replica - Read Only")]
+        Redis[("Redis Cluster")]
+        S3[("AWS S3 Bucket")]
+    end
+
+    PC --> CloudFront
+    Tablet --> CloudFront
+    Mobile --> CloudFront
+
+    CloudFront -->|Static Media & Assets| S3
+    CloudFront -->|Dynamic API Requests| LB
+
+    LB --> App1
+    LB --> App2
+
+    App1 --> DB_Primary
+    App2 --> DB_Primary
+
+    DB_Primary -.->|Asynchronous Replication| DB_Replica
+
+    App1 --> Redis
+    App2 --> Redis
+
+    App1 --> S3
+    App2 --> S3
+
+    style Client fill:#e3f2fd
+    style CDN fill:#fce4ec
+    style WebServer fill:#fff3e0
+    style DataStores fill:#e8f5e9
