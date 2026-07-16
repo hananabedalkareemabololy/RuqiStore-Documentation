@@ -1,49 +1,69 @@
-# 13. Appendices & Supplementary Materials
+# 13. Appendices
 
-## 📌 Overview
-This appendix contains supplementary reference materials, a comprehensive glossary of technical terms, and an overview of the technology stack utilized across the **Ruqi Store** development lifecycle. These resources provide extra clarity for developers, designers, and project stakeholders.
-
----
-
-## 📚 1. Glossary of Terms
+## Appendix A: Glossary
 
 | Term | Definition |
-| :--- | :--- |
-| **Domain Model** | A visual and conceptual representation of real-world entities, their attributes, and relationships operating within the system. |
-| **SKU (Stock Keeping Unit)** | A unique alphanumeric identifier assigned to each distinct furniture item to track catalog inventory. |
-| **DTO (Data Transfer Object)** | A lightweight, flat class designed specifically to pass data securely between architectural layers without exposing database entity configurations. |
-| **Price Snapshot** | A persistent copy of a product's price recorded inside the `OrderItem` table at the precise millisecond of checkout, isolating historical invoices from future catalog price updates. |
-| **Cascade Delete** | A database constraint configuration where deleting a parent row (e.g., an `Order`) automatically triggers the deletion of all its child rows (e.g., associated `OrderItems`). |
-| **Mermaid.js** | A JavaScript-based diagramming tool that parses markdown-like text definitions to dynamically render diagrams and charts directly in web browsers (and native GitHub markdown files). |
-| **WCAG 2.1 AA** | Web Content Accessibility Guidelines version 2.1 at level AA, defining standard benchmarks to ensure websites are fully accessible to individuals with diverse visual and physical abilities. |
-| **RTL (Right-to-Left)** | Page layout direction tailored for languages like Arabic, requiring text alignment and structural elements to flip horizontally. |
+|------|-----------|
+| Actor | An external entity (person or system) that interacts with the Ruqi Store system (e.g., Customer, Admin, Payment Gateway). |
+| API | Application Programming Interface — a set of rules for how software components communicate (e.g., Stripe Payment API). |
+| BCrypt | A password hashing algorithm designed to resist brute-force attacks, used for securing user credentials. |
+| CRUD | Create, Read, Update, Delete — the four basic operations performed on product catalog and order data. |
+| DTO | Data Transfer Object — a lightweight object used to pass formatted data securely between system layers. |
+| ER Diagram | Entity-Relationship Diagram — a visual model of database tables (`products`, `orders`, `users`) and their relationships. |
+| MoSCoW | Prioritization method: Must have, Should have, Could have, Won't have (used for platform roadmap). |
+| NFR | Non-Functional Requirement — a quality attribute like site performance, checkout security, or responsive usability. |
+| Price Snapshot | A persistent copy of a product's price saved in the order history table at checkout to isolate it from future catalog changes. |
+| REST | Representational State Transfer — an architectural style for designing scalable and stateless web APIs. |
+| RTL | Right-to-Left — structural layout adaptation required for Arabic text and user interface mirroring. |
+| SKU | Stock Keeping Unit — a unique alphanumeric code assigned to each distinct furniture item and variant for inventory tracking. |
+| SRS | Software Requirements Specification — a document describing the complete scope and specifications of the Ruqi Store system. |
+| Three-Tier | An architecture pattern separating the presentation, business logic (Services), and data storage (SQL Server) layers. |
+| UML | Unified Modeling Language — a standardized set of diagrams used for modeling the e-commerce software structure. |
+| Use Case | A description of how a user achieves a specific goal (e.g., checkout, booking a showroom consultation). |
+| WCAG | Web Content Accessibility Guidelines — international standards used to ensure the retail platform is digitally accessible. |
+
+## Appendix B: References
+
+| # | Reference | Used In |
+|---|-----------|---------|
+| 1 | IEEE 830-1998: Recommended Practice for SRS | Section 3 |
+| 2 | UML 2.5 Specification (OMG) | Sections 4, 6, 7 |
+| 3 | Bootstrap 5 RTL Integration Guidelines | Section 11 |
+| 4 | WCAG 2.1 AA Guidelines (W3C Standard) | Section 11, 12 |
+| 5 | "Clean Architecture" by Robert C. Martin | Sections 9, 10 |
+| 6 | "Design Patterns: Elements of Reusable Object-Oriented Software" | Section 10 |
+| 7 | ASP.NET Core MVC & Entity Framework Core Documentation (Microsoft) | Sections 8, 9 |
+
+## Appendix C: Revision History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 0.1 | May 10, 2026 | Analysis Team | Initial draft — requirements gathering and project scope (Sections 1–3) |
+| 0.5 | May 24, 2026 | Analysis Team | Added e-commerce use cases, user stories, and catalog domain model |
+| 0.8 | Jun 08, 2026 | Design Team | Added SQL Server schema, MVC architecture, and checkout sequences |
+| 1.0 | Jun 22, 2026 | Full Team | Final publication — all sections finalized, verified, and formatted |
+
+## Appendix D: Diagram Index
+
+| # | Diagram | Type | Section |
+|---|---------|------|---------|
+| 1 | Stakeholder Map | Quadrant Chart | 2.2 |
+| 2 | Actor Generalization | Class Diagram | 4.1 |
+| 3 | Use Case Diagram | Use Case Diagram | 4.2 |
+| 4 | User Story Map | Block Diagram | 5.3 |
+| 5 | Domain Model / Class Diagram | Class Diagram | 6.2 |
+| 6 | Enumeration Types (Order/Booking Status) | Class Diagram | 6.4 |
+| 7 | Secure Checkout Sequence | Sequence Diagram | 7.1 |
+| 8 | Book Showroom Consultation Sequence | Sequence Diagram | 7.2 |
+| 9 | Add to Cart & Checkout Activity | Activity Diagram | 7.3 |
+| 10 | Order Fulfillment State Machine | State Diagram | 7.4 |
+| 11 | Stock Validation Activity | Activity Diagram | 7.5 |
+| 12 | Database Entity-Relationship Diagram | ER Diagram | 8.1 |
+| 13 | Three-Tier System Architecture | Architecture Diagram | 9.1 |
+| 14 | Component Diagram | Component Diagram | 9.3 |
+| 15 | Azure/SmarterASP Deployment Diagram | Deployment Diagram | 9.5 |
+| 16 | User Interface Navigation Flow | Flowchart | 11.2 |
 
 ---
 
-## 💻 2. Technology Stack & Developer Tools
-
-The following technologies are specified for the development, layout, and operation of the **Ruqi Store** ecosystem:
-
-### Backend Development
-* **Platform:** .NET Core (C#)
-* **Framework:** ASP.NET Core MVC (Model-View-Controller)
-* **Database Access:** Entity Framework Core (EF Core) using the Repository & Unit of Work patterns
-* **Database Engine:** Microsoft SQL Server
-
-### Frontend & UI/UX Design
-* **Styling Framework:** Bootstrap 5 (utilizing `bootstrap.rtl.min.css` for Arabic localized browsing)
-* **Client-side Scripting:** jQuery & jQuery Validation Unobtrusive
-* **Icons:** FontAwesome or Bootstrap Icons
-* **Primary Fonts:** `Inter` (sans-serif)
-
-### Documentation & Diagramming
-* **Formatting:** GitHub Flavored Markdown (GFM)
-* **Diagrams:** Mermaid.js (Sequence, ERD, and Dependency Flow Charts)
-
----
-
-## 🔗 3. References & Guidelines
-
-* **WCAG 2.1 Accessibility Checklist:** [W3C Web Accessibility Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/)
-* **Bootstrap 5 RTL Documentation:** [Bootstrap RTL Integration Guide](https://getbootstrap.com/docs/5.0/getting-started/rtl/)
-* **Mermaid Diagram Syntax Reference:** [Mermaid.js official documentation](https://mermaid.js.org/)
+[← Previous: Traceability Matrix](./12-traceability.md) | [Back to Index](./00-index.md)
