@@ -9,10 +9,11 @@ The Ruqi Store architecture applies established software design patterns to solv
 | **Repository** | Structural | Data Access Layer | Abstracts database operations behind a consistent interface. Isolates business services from raw database queries, allowing caching layers such as Redis to be injected transparently. |
 | **MVC** | Architectural | System Presentation & Route Control | Separates UI, business logic, and request orchestration. Controllers process requests, invoke backend services, and return normalized responses or views. |
 | **Observer** | Behavioral | Order Notification & Audit Logging | Triggers asynchronous background processes such as sending order confirmation emails, reducing stock, and writing audit logs when an order status changes without tight coupling. |
-| **Factory** | Creational | Showroom Appointment Scheduler | A BookingFactory creates the correct appointment and notification structure depending on the selected showroom category. |
+| **Factory** | Creational | Showroom Appointment Scheduler | A `BookingFactory` creates the correct appointment and notification structure depending on the selected showroom category. |
 | **Strategy** | Behavioral | Discount & Promotion System | Different discount calculation strategies can be executed dynamically based on active shopping cart contents. |
 
 ---
+
 ## 10.2 SOLID Principles in Practice
 
 ### Single Responsibility Principle (SRP)
@@ -62,6 +63,8 @@ public class FixedAmountDiscountStrategy : IDiscountStrategy
         return originalTotal - 50m;
     }
 }
+
+```csharp
 // New strategy can be added without modifying existing checkout logic.
 
 public class FlashSaleDiscountStrategy : IDiscountStrategy
@@ -73,74 +76,6 @@ public class FlashSaleDiscountStrategy : IDiscountStrategy
         return originalTotal * 0.80m;
     }
 }
-
----
-
-### Dependency Inversion Principle (DIP)
-
-High-level application controllers depend on abstract interfaces rather than concrete service implementations.
-
-This improves separation of concerns and allows easy unit testing using mock services.
-
-```csharp
-public class OrderController : ControllerBase
-{
-    private readonly IOrderService _orderService;
-
-    public OrderController(IOrderService orderService)
-    {
-        _orderService = orderService;
-    }
-}
-Production runtime:
-
-```csharp
-new OrderController(
-    new OrderService(databaseContext)
-);
-new OrderController(
-    new MockOrderService()
-);
-# 10.3 Service Contracts & Interfaces
-
-These interfaces define the communication contracts between the Presentation Layer and the Business Logic Layer.
-
-Controllers communicate only through interfaces, allowing implementations to be replaced without affecting higher system layers.
-
----
-
-## A. IOrderService
-
-**Responsibility:**  
-Handles the complete order lifecycle, including checkout execution, order retrieval, and order status management.
-
-```csharp
-public interface IOrderService
-{
-    // Executes checkout process.
-    Task<OrderResponseDto> PlaceOrderAsync(
-        string userId,
-        CheckoutDto checkoutDetails
-    );
-
-    // Retrieves order details.
-    Task<OrderDetailsDto> GetOrderByIdAsync(
-        int orderId,
-        string userId
-    );
-
-    // Returns customer's order history.
-    Task<IEnumerable<OrderSummaryDto>> GetUserOrderHistoryAsync(
-        string userId
-    );
-
-    // Updates order status (Admin only).
-    Task<bool> UpdateOrderStatusAsync(
-        int orderId,
-        string status
-    );
-}
-
 ## B. ICartService
 
 **Responsibility:**  
@@ -149,55 +84,30 @@ Manages the user's active shopping cart and validates inventory before checkout.
 ```csharp
 public interface ICartService
 {
-    // Retrieves active shopping cart.
     Task<CartDto> GetActiveCartAsync(
         string userId
     );
 
-    // Adds product to shopping cart.
     Task<bool> AddToCartAsync(
         string userId,
         int productId,
         int quantity
     );
 
-    // Updates existing cart item quantity.
     Task<bool> UpdateCartItemQuantityAsync(
         string userId,
         int cartItemId,
         int newQuantity
     );
 
-    // Removes item from shopping cart.
     Task<bool> RemoveFromCartAsync(
         string userId,
         int cartItemId
     );
 
-    // Clears active cart.
     Task<bool> ClearCartAsync(
         string userId
     );
-}
-# 10.4 Data Transfer Objects (DTOs)
-
-DTOs are lightweight classes used to transfer data between application layers without exposing Entity Framework models directly.
-
----
-
-## A. CheckoutDto
-
-**Purpose:**  
-Carries checkout information from the Presentation Layer to the Business Logic Layer.
-
-```csharp
-public class CheckoutDto
-{
-    public string ShippingAddress { get; set; }
-
-    public string PaymentMethod { get; set; }
-
-    public string ContactPhoneNumber { get; set; }
 }
 ## C. CartItemDto
 
@@ -237,9 +147,8 @@ Before any checkout transaction is committed, the following validation rules and
 | 8 | Commit the transaction atomically. |
 
 ---
-## Checkout Workflow
 
-```mermaid
+## Checkout Workflow
 flowchart TD
     A[Checkout Request] --> B[Verify Stock]
     B --> C[Freeze Product Prices]
@@ -275,6 +184,8 @@ All checkout operations run within a single shared database transaction.
 
 If any operation fails, the transaction is rolled back automatically to preserve database consistency.
 
+---
+
 # 10.6 API Design (Sample Endpoints)
 
 All endpoints follow RESTful conventions.
@@ -282,7 +193,6 @@ All endpoints follow RESTful conventions.
 Authentication is required via a secure JSON Web Token (JWT) provided in the `Authorization` header.
 
 ---
-
 ## POST /api/carts/items
 
 **Purpose:**  
@@ -342,16 +252,7 @@ Customer views their finalized purchase invoice and order status.
   "orderDate": "2026-07-15T15:30:00Z",
   "orderStatus": "SHIPPED",
   "totalAmount": 1250.00,
-  "shippingAddress": "Al-Amal Street, Khan Yunis, Gaza",
-  "orderItems": [
-    {
-      "orderItemId": 12040,
-      "productId": 204,
-      "productName": "Ergonomic Office Chair",
-      "quantity": 2,
-      "priceSnapshot": 625.00
-    }
-  ]
+  "shippingAddress": "Al-Amal Street, Khan Yunis, Gaza"
 }
 ### Error Responses
 
@@ -406,6 +307,7 @@ The Ruqi Store system follows a layered error handling approach to ensure consis
 | Middleware | Handles unhandled application failures globally, records audit information, and hides internal stack traces in production. | Captures unexpected failures, writes diagnostic details into `audit_logs`, and returns a generic server error message. |
 
 ---
+
 ## System Scalability Considerations
 
 Our system architecture is designed to handle up to **1,000 concurrent shopping sessions** efficiently.
