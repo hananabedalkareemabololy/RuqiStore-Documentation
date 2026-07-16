@@ -140,3 +140,42 @@ public interface IOrderService
         string status
     );
 }
+
+## B. ICartService
+
+**Responsibility:**  
+Manages the user's active shopping cart and validates inventory before checkout.
+
+```csharp
+public interface ICartService
+{
+    // Retrieves active shopping cart.
+    Task<CartDto> GetActiveCartAsync(
+        string userId
+    );
+
+    // Adds product to shopping cart.
+    Task<bool> AddToCartAsync(
+        string userId,
+        int productId,
+        int quantity
+    );
+
+    // Updates existing cart item quantity.
+    Task<bool> UpdateCartItemQuantityAsync(
+        string userId,
+        int cartItemId,
+        int newQuantity
+    );
+
+    // Removes item from shopping cart.
+    Task<bool> RemoveFromCartAsync(
+        string userId,
+        int cartItemId
+    );
+
+    // Clears active cart.
+    Task<bool> ClearCartAsync(
+        string userId
+    );
+}
