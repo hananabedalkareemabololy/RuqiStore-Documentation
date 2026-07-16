@@ -1,66 +1,203 @@
-# 06. Domain Model & Object Structure
+# 06. Domain Model & Class Diagram
 
-## 📌 Overview
-The Domain Model represents the core conceptual schema and entity relationships operating inside the **Ruqi Store** ecosystem. It illustrates how business data flows and bridges the gap between the database architecture and the application logic layer.
+## 6.1 Identifying Classes from Use Cases
+
+Domain classes are discovered by extracting nouns from use case descriptions, database structures, and e-commerce requirements. The key technique is to examine actors, objects mentioned in purchasing/booking scenarios, and persistent data.
+
+| Source | Nouns Extracted | Candidate Class |
+| :--- | :--- | :--- |
+| **UC-004: Checkout & Place Order** | customer, shopping cart, product, order, order item, price snapshot, inventory stock | Customer, Cart, CartItem, Product, Order, OrderItem |
+| **UC-007: Book Showroom Visit** | customer, showroom, appointment, booking date, time slot, status | ShowroomAppointment |
+| **UC-006: Submit Product Review** | customer, product, review rating, comments, verified status | ProductReview |
+| **FR-002: Role-Based Access Control** | user, identity, role, email, password | ApplicationUser, Role |
+| **FR-006: Dynamic Catalog** | category, product catalog, search filters | Category |
+
+After filtering out attributes, transient request states, and out-of-scope system nouns, the final structural domain classes are defined below.
 
 ---
 
-## 🗺️ Visual Domain Entity Map
+## 6.2 Domain Model
 
-```text
-  ┌──────────────┐             ┌──────────────┐             ┌──────────────┐
-  │   Category   │1           *│   Product    │1           *│  OrderItem   │
-  ├──────────────┤────────────►├──────────────┤────────────►├──────────────┤
-  │ Id           │             │ Id           │             │ Id           │
-  │ Name         │             │ Name         │             │ PriceSnapshot│
-  └──────────────┘             │ Price        │             │ Quantity     │
-                               │ SKU          │             └──────┬───────┘
-                               │ IsActive     │                    │
-                               └──────┬───────┘                    │ *
-                                      │                            │
-                                      │ 1                          │
-                                      ▼ *                          │
-  ┌──────────────┐1          1┌──────────────┐1           *┌──────▼───────┐
-  │AppUser(Identity)─────────►│     Cart     │             │    Order     │
-  ├──────────────┤            ├──────────────┤             ├──────────────┤
-  │ Id           │            │ Id           │             │ Id           │
-  │ Email        │            └──────┬───────┘             │ OrderStatus  │
-  │ Role         │                   │ 1                   │ OrderDate    │
-  └──────┬───────┘                   │                     └──────────────┘
-         │                           │ *
-         │ 1                  ┌──────▼───────┐
-         ▼ *                  │   CartItem   │
-  ┌──────────────┐            ├──────────────┤
-  │   Wishlist   │            │ Id           │
-  ├──────────────┤            │ Quantity     │
-  │ Id           │            └──────────────┘
-  │ ProductId    │
-  └──────────────┘
+```mermaid
+classDiagram
+    class User {
+        -int userId
+        -string firstName
+        -string lastName
+        -string email
+        -string passwordHash
+        -Role role
+        -boolean isActive
+        -datetime createdAt
+        +login()
+        +logout()
+        +updateProfile()
+        +resetPassword()
+    }
+
+    class Customer {
+        -int customerId
+        -string defaultShippingAddress
+        -string phone
+        +addToCart()
+        +checkout()
+        +bookShowroomVisit()
+    }
+
+    class StoreManager {
+        -int managerId
+        -string employeeId
+        +updateProductCatalog()
+        +manageStock()
+        +approveAppointment()
+    }
+
+    class Product {
+        -int productId
+        -string sku
+        -string name
+        -string description
+        -decimal price
+        -int stockQuantity
+        -string material
+        -string dimensions
+        -boolean isActive
+        +updateStock(int quantity)
+        +deactivate()
+        +isLowStock() boolean
+    }
+
+    class Category {
+        -int categoryId
+        -string name
+        -string description
+        -boolean isActive
+        +getProducts()
+    }
+
+    class Cart {
+        -int cartId
+        -datetime createdAt
+        -datetime updatedAt
+        +addItem(Product product, int qty)
+        +removeItem(int productId)
+        +clearCart()
+        +calculateTotal() decimal
+    }
+
+    class CartItem {
+        -int cartItemId
+        -int quantity
+        +updateQuantity(int qty)
+    }
+
+    class Order {
+        -int orderId
+        -datetime orderDate
+        -OrderStatus orderStatus
+        -BillingStatus billingStatus
+        -decimal totalAmount
+        -string shippingAddress
+        +updateStatus(OrderStatus status)
+        +cancelOrder()
+    }
+
+    class OrderItem {
+        -int orderItemId
+        -decimal priceSnapshot
+        -int quantity
+        +getSubtotal() decimal
+    }
+
+    class ShowroomAppointment {
+        -int appointmentId
+        -string showroomLocation
+        -datetime appointmentDate
+        -string timeSlot
+        -AppointmentStatus status
+        +approve()
+        +reschedule(datetime newDate)
+        +cancel()
+    }
+
+    class ProductReview {
+        -int reviewId
+        -int rating
+        -string comment
+        -datetime submittedAt
+        -boolean isModerated
+        +approveReview()
+        +flagReview()
+    }
+
+    %% Inheritance
+    User <|-- Customer
+    User <|-- StoreManager
+
+    %% Associations
+    Category "1" --> "*" Product : classifies
+    Customer "1" --> "1" Cart : owns
+    Cart "1" --> "*" CartItem : contains
+    Product "1" --> "*" CartItem : references
+    Customer "1" --> "*" Order : places
+    Order "1" --> "*" OrderItem : contains
+    Product "1" --> "*" OrderItem : snapshotted in
+    Customer "1" --> "*" ShowroomAppointment : schedules
+    Customer "1" --> "*" ProductReview : writes
+    Product "1" --> "*" ProductReview : receives
+```
+## 6.3 Class Relationship Summary
+
+| Relationship | Type | Description |
+| :--- | :--- | :--- |
+| **User → Customer / StoreManager** | Inheritance | All active roles inherit identity properties. Each child class extends the base `User` class with role-specific behavior. |
+| **Category → Product** | Association (1:*) | A category contains many products. Every product belongs to exactly one category. |
+| **Customer → Cart** | Composition (1:1) | A cart exists only for its owning customer and cannot exist independently. |
+| **Cart → CartItem** | Composition (1:*) | Cart items are dependent child entities. Removing a cart removes all associated cart items. |
+| **Order → OrderItem** | Composition (1:*) | Order items represent immutable purchase lines belonging exclusively to a single order. |
+| **Product → OrderItem** | Association (1:*) | Each order item stores a `priceSnapshot` to preserve historical pricing. |
+| **Customer → ShowroomAppointment** | Association (1:*) | A customer may schedule multiple showroom appointments. |
+| **Customer → ProductReview** | Association (1:*) | A verified customer may submit one review per purchased product. |
+
+---
+
+## 6.4 Enumeration Types
+
+```mermaid
+classDiagram
+    class Role {
+        <<enumeration>>
+        CUSTOMER
+        STORE_MANAGER
+        ACCOUNTANT
+        ADMINISTRATOR
+    }
+
+    class OrderStatus {
+        <<enumeration>>
+        PENDING
+        PROCESSING
+        SHIPPED
+        DELIVERED
+        CANCELLED
+    }
+
+    class AppointmentStatus {
+        <<enumeration>>
+        PENDING_APPROVAL
+        APPROVED
+        RESCHEDULED
+        CANCELLED
+    }
+
+    class BillingStatus {
+        <<enumeration>>
+        PENDING_PAYMENT
+        PAID
+        REFUNDED
+    }
 ```
 
-## 👥 Core Domain Entities & Structural Attributes
-
-### 1. User & Identity Management
-* **`ApplicationUser` (Inherits from `IdentityUser`):** Represents any authenticated actor in the system. Holds core registration properties and links directly to customer profiles, specific roles (Customer, Store Manager, Accountant, Administrator), persistent carts, and personal wishlists.
-
-### 2. Catalog & Product Inventory
-* **`Product`:** Defines a specific furniture item (e.g., Sofa, Table) with critical commercial attributes: `ProductId`, `Name`, `Price`, `SKU`, `StockQuantity`, and a status toggle `IsActive` to handle soft-deletes.
-* **`Category`:** Groups related furniture products (e.g., Living Room, Bedroom Office). Holds `CategoryId` and `Name`.
-
-### 3. Shopping Session & Customer Selection
-* **`Cart`:** A unique, database-backed shopping instance bound directly to a single active user account (`ApplicationUser`).
-* **`CartItem`:** A junction entity pairing a specific `Product` with the requested `Quantity` inside an active cart session.
-* **`Wishlist`:** A lightweight data structure linking an individual user profile (`UserId`) to multiple favorited `Products` for long-term purchasing consideration.
-
-### 4. Transactions & Order Management
-* **`Order`:** Captures a completed checkout event. Enforces the structural lifecycle via state properties (`OrderStatus` mapping to `Pending`, `Processing`, `Shipped`, `Delivered`, or `Cancelled`) and stores absolute `OrderDate` records.
-* **`OrderItem`:** Represents an immutable, frozen snapshot of an item at the exact moment of checkout, capturing `PriceSnapshot` and exact transaction quantities.
-
 ---
 
-## 🔗 Key Data Relationships Defined
-
-* **One-to-Many (`Category` ──► `Products`):** One furniture category houses multiple products; each independent product maps to exactly one category parent.
-* **One-to-One (`ApplicationUser` ◄──► `Cart`):** Strict relationship constraint enforced by a unique index on the entity's `UserId`.
-* **One-to-Many (`ApplicationUser` ──► `Wishlist`):** An authenticated user can catalog multiple desired items within their active wishlist database.
-* **One-to-Many (`Order` ──► `OrderItems`):** A single completed purchase invoice captures and renders multiple distinct line items.
+← **Previous:** User Stories | **Back to Index** | **Next:** UML Behavioral Models →
