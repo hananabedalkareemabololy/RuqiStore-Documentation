@@ -5,72 +5,82 @@
 The Ruqi Store architecture applies established software design patterns to solve common architectural challenges and maintain a clean separation of concerns.
 
 | Pattern | Category | Where Applied | Problem Solved |
-|---------|----------|---------------|----------------|
+|---|---|---|---|
 | **Repository** | Structural | Data Access Layer | Abstracts database operations behind a consistent interface. Isolates business services from raw database queries, allowing caching layers such as Redis to be injected transparently. |
-| **MVC** | Architectural | System Presentation & Route Control | Separates UI, business logic, and request orchestration. Controllers process requests, invoke appropriate backend services, and return normalized responses or views. |
-| **Observer** | Behavioral | Order Notification & Audit Logging | Triggers asynchronous background processes such as sending order confirmation emails, reducing stock, and writing audit logs when an order transitions to "Paid" without tight coupling. |
-| **Factory** | Creational | Showroom Appointment Scheduler | A `BookingFactory` creates the correct appointment and notification layout depending on the selected showroom category. |
-| **Strategy** | Behavioral | Discount & Promotion System | Different calculation strategies such as coupon discount, seasonal discount, and bulk order discount can be executed dynamically based on the active shopping cart contents. |
+| **MVC** | Architectural | System Presentation & Route Control | Separates UI, business logic, and request orchestration. Controllers process requests, invoke backend services, and return normalized responses or views. |
+| **Observer** | Behavioral | Order Notification & Audit Logging | Triggers asynchronous background processes such as sending order confirmation emails, reducing stock, and writing audit logs when an order status changes without tight coupling. |
+| **Factory** | Creational | Showroom Appointment Scheduler | A BookingFactory creates the correct appointment and notification structure depending on the selected showroom category. |
+| **Strategy** | Behavioral | Discount & Promotion System | Different discount calculation strategies can be executed dynamically based on active shopping cart contents. |
 
 ---
-
 ## 10.2 SOLID Principles in Practice
 
 ### Single Responsibility Principle (SRP)
 
-Each service has one clear responsibility within the business workflow.
+Each service has responsibility for one cohesive part of the business flow.
 
-- `CartService` → Manages user shopping carts, item additions, quantity updates, and cart state.
-- `InventoryService` → Manages warehouse quantities and product availability.
-- `PaymentService` → Processes secure checkout payments.
-- `InvoiceService` → Generates receipt documentation and invoice PDFs.
+- `CartService` manages shopping cart operations, item additions, quantity updates, and cart state.
+- `InventoryService` manages warehouse stock levels and product availability.
+- `PaymentService` processes secure checkout payments.
+- `InvoiceService` generates receipt documentation and invoice files.
 
-Each class has only one reason to change, which improves maintainability and testing.
+Each class has only one reason to change.
 
 ---
 
 ### Open/Closed Principle (OCP)
 
-The promotions and pricing engine can introduce new discount methods without modifying existing core logic.
+The promotions and pricing engine supports adding new discount methods without modifying existing checkout logic.
 
-Adding a new discount type only requires creating a new strategy class implementing the shared interface.
+Adding a new discount type only requires creating a new strategy class that implements the shared interface.
 
 ```csharp
 public interface IDiscountStrategy
 {
-    decimal ApplyDiscount(IEnumerable<CartItemDto> cartItems, decimal originalTotal);
+    decimal ApplyDiscount(
+        IEnumerable<CartItemDto> cartItems,
+        decimal originalTotal
+    );
 }
 
 public class PercentageDiscountStrategy : IDiscountStrategy
 {
-    public decimal ApplyDiscount(IEnumerable<CartItemDto> cartItems, decimal originalTotal)
+    public decimal ApplyDiscount(
+        IEnumerable<CartItemDto> cartItems,
+        decimal originalTotal)
     {
-        return originalTotal * 0.10m;
+        return originalTotal * 0.90m;
     }
 }
 
 public class FixedAmountDiscountStrategy : IDiscountStrategy
 {
-    public decimal ApplyDiscount(IEnumerable<CartItemDto> cartItems, decimal originalTotal)
+    public decimal ApplyDiscount(
+        IEnumerable<CartItemDto> cartItems,
+        decimal originalTotal)
     {
-        return 50m;
+        return originalTotal - 50m;
+    }
+}
+// New strategy can be added without modifying existing checkout logic.
+
+public class FlashSaleDiscountStrategy : IDiscountStrategy
+{
+    public decimal ApplyDiscount(
+        IEnumerable<CartItemDto> cartItems,
+        decimal originalTotal)
+    {
+        return originalTotal * 0.80m;
     }
 }
 
-// New strategies can be added without modifying existing logic
-public class FlashSaleDiscountStrategy : IDiscountStrategy
-{
-    public decimal ApplyDiscount(IEnumerable<CartItemDto> cartItems, decimal originalTotal)
-    {
-        return originalTotal * 0.20m;
-    }
-}
+---
 
 ### Dependency Inversion Principle (DIP)
 
-High-level application controllers depend on abstractions rather than concrete service implementations.
+High-level application controllers depend on abstract interfaces rather than concrete service implementations.
 
-This separates dependencies and allows easy unit testing using mock services.
+This improves separation of concerns and allows easy unit testing using mock services.
 
 ```csharp
 public class OrderController : ControllerBase
@@ -82,28 +92,12 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 }
-
-// Production runtime:
-// new OrderController(new OrderService(databaseContext))
-
-// Testing runtime:
-// new OrderController(new MockOrderService())
-
-# 10.4 Data Transfer Objects (DTOs)
-
-DTOs are lightweight classes used to transfer data between application layers without exposing Entity Framework models directly.
-
----
-
-## A. CheckoutDto
-
-**Purpose:**  
-Carries checkout information from the Presentation Layer to the Business Logic Layer.
+Production runtime:
 
 ```csharp
-public class CheckoutDto
-{
-    public string ShippingAddress { get; set; }
-    public string PaymentMethod { get; set; }
-    public string ContactPhoneNumber { get; set; }
-}
+new OrderController(
+    new OrderService(databaseContext)
+);
+new OrderController(
+    new MockOrderService()
+);
