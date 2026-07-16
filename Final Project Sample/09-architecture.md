@@ -2,121 +2,155 @@
 
 9.1 Architecture Pattern: Three-Tier Architecture
 
-Ruqi Store follows a Three-Tier Layered Architecture that separates the system into three independent layers: Presentation Layer, Business Logic Layer, and Data Access Layer.
+Ruqi Store follows a Three-Tier Layered Architecture that separates the system into three main layers:
 
-This architecture improves maintainability, scalability, testing, and separation of responsibilities. It also supports the requirements of an e-commerce platform by isolating user interaction, business rules, and database operations.
+1. Presentation Layer
+2. Business Logic Layer
+3. Data Access Layer
+
+This architecture improves maintainability, scalability, testing, and separation of responsibilities.
 
 graph TB
 
-    subgraph Presentation["Presentation Tier"]
-        Browser["Web Browser"]
-        MVC["ASP.NET Core MVC Views / Controllers"]
-        UI["HTML + CSS + Bootstrap 5 + JavaScript"]
+    subgraph Presentation["Presentation Layer"]
+        UI["ASP.NET Core MVC Views"]
+        Client["Web Browser / Mobile Browser"]
     end
 
-    subgraph Business["Business Logic Tier"]
-        Services["Application Services"]
-        Validation["Business Validation Layer"]
-        Identity["ASP.NET Core Identity"]
+    subgraph Business["Business Logic Layer"]
+        Controllers["MVC Controllers"]
+        Services["Business Services"]
+        Validation["Validation & Business Rules"]
     end
 
-    subgraph Data["Data Access Tier"]
+    subgraph Data["Data Access Layer"]
         Repository["Repository Layer"]
         EF["Entity Framework Core"]
-        DB[("SQL Server Database")]
+        Database[("SQL Server Database")]
     end
 
     subgraph External["External Services"]
-        Email["Email Notification Service"]
         Payment["Payment Gateway"]
+        Email["Email Notification Service"]
         Storage["File Storage"]
     end
 
 
-    Browser --> MVC
-    MVC --> UI
-
-    MVC --> Services
+    Client --> UI
+    UI --> Controllers
+    Controllers --> Services
     Services --> Validation
-    Services --> Identity
-
     Services --> Repository
     Repository --> EF
-    EF --> DB
+    EF --> Database
 
-    Services --> Email
     Services --> Payment
+    Services --> Email
     Services --> Storage
 
 ---
 
-9.2 Technology Stack
+9.2 Layer Responsibilities
 
-Layer| Technology| Justification
-Frontend| ASP.NET Core MVC Razor Views + Bootstrap 5 + JavaScript| Provides structured UI development, responsive layouts, and strong integration with backend services.
-Backend| ASP.NET Core MVC| Provides secure routing, controllers, dependency injection, and scalable server-side processing.
-ORM| Entity Framework Core| Simplifies database communication using object-oriented models and LINQ queries.
-Database| SQL Server| Provides ACID transactions, relational integrity, and reliable order/inventory management.
-Authentication| ASP.NET Core Identity| Provides secure user management, password hashing, roles, and authorization.
-API Communication| RESTful Services| Enables structured communication between system components and external services.
-File Storage| Server Storage / Cloud Storage (Optional)| Stores product images, invoices, and marketing resources.
-External Services| Email Provider and Payment Gateway| Handles notifications and secure payment processing.
+Layer| Technology| Responsibility
+Presentation Layer| ASP.NET Core MVC + Razor Views| Handles user interaction, pages, forms, and displaying data.
+Business Logic Layer| C# Services| Contains business rules, checkout workflow, inventory validation, and booking logic.
+Data Access Layer| Entity Framework Core + Repository Pattern| Handles database communication and CRUD operations.
+Database| SQL Server| Stores users, products, carts, orders, reviews, and transactions.
+Authentication| ASP.NET Identity| Provides secure login, registration, and role management.
+File Storage| Local Storage / Cloud Storage| Stores product images and uploaded assets.
 
 ---
 
 9.3 Component Diagram
 
-This diagram represents the main software components and the communication flow inside Ruqi Store.
+The component diagram represents the internal software components and their communication flow.
 
 graph LR
 
-    subgraph UI["Presentation Layer"]
-        Login["Login/Register Pages"]
-        Catalog["Product Catalog"]
-        CartUI["Shopping Cart"]
-        Checkout["Checkout"]
-        Booking["Showroom Booking"]
-    end
+subgraph Frontend["Presentation Layer"]
+
+Login["Login/Register Views"]
+
+Catalog["Product Catalog Views"]
+
+Cart["Shopping Cart Views"]
+
+Checkout["Checkout Views"]
+
+Showroom["Showroom Booking Views"]
+
+end
 
 
-    subgraph Controllers["MVC Controllers"]
-        AccountC["Account Controller"]
-        ProductC["Product Controller"]
-        CartC["Cart Controller"]
-        OrderC["Order Controller"]
-        BookingC["Booking Controller"]
-    end
+subgraph Controllers["MVC Controllers"]
+
+AuthController["Account Controller"]
+
+ProductController["Product Controller"]
+
+CartController["Cart Controller"]
+
+OrderController["Order Controller"]
+
+BookingController["Showroom Controller"]
+
+end
 
 
-    subgraph Services["Business Services"]
-        UserS["User Service"]
-        ProductS["Product Service"]
-        CartS["Cart Service"]
-        OrderS["Order Service"]
-        InventoryS["Inventory Service"]
-        BookingS["Appointment Service"]
-    end
+subgraph Services["Business Services"]
+
+UserService["User Service"]
+
+ProductService["Product Service"]
+
+CartService["Cart Service"]
+
+OrderService["Order Service"]
+
+InventoryService["Inventory Service"]
+
+BookingService["Appointment Service"]
+
+end
 
 
-    subgraph Data["Data Access Layer"]
-        UserRepo["User Repository"]
-        ProductRepo["Product Repository"]
-        CartRepo["Cart Repository"]
-        OrderRepo["Order Repository"]
-        BookingRepo["Booking Repository"]
-    end
+subgraph Repository["Repository Layer"]
+
+UserRepo["User Repository"]
+
+ProductRepo["Product Repository"]
+
+OrderRepo["Order Repository"]
+
+CartRepo["Cart Repository"]
+
+BookingRepo["Booking Repository"]
+
+end
 
 
-    DB[("SQL Server")]
+Database[("SQL Server")]
 
 
-    UI --> Controllers
-    Controllers --> Services
-    Services --> Data
-    Data --> DB
+Frontend --> Controllers
+
+Controllers --> Services
+
+Services --> Repository
+
+Repository --> Database
 
 ---
 
 9.4 Architectural Decisions
 
-Decision Topic| Selected Approach| Alternatives Considered| Rationale
+Decision| Selected Approach| Alternative| Reason
+Architecture Pattern| Three-Tier Architecture| Microservices| Suitable for a medium-size e-commerce system and easier deployment.
+Backend Framework| ASP.NET Core MVC| Node.js Express| Matches project requirements and provides strong integration with SQL Server and Entity Framework.
+Database| SQL Server| MongoDB| Orders and payments require ACID transactions and relational consistency.
+Data Access| Repository Pattern + EF Core| Direct SQL Queries| Separates business logic from database implementation.
+Authentication| ASP.NET Identity + Roles| Custom Authentication| Provides secure and tested identity management.
+API Communication| RESTful Services| SOAP| Lightweight and easier integration with frontend/mobile applications.
+
+---
