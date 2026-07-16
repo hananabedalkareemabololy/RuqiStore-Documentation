@@ -105,3 +105,17 @@ graph TD
 │ © 2026 Ruqi Premium Furniture. All Rights Reserved.         │
 └─────────────────────────────────────────────────────────────┘
 ```
+## 11.4 Accessibility Considerations
+
+To ensure a highly inclusive and responsive design, the following accessibility mappings are implemented:
+
+| Requirement | Implementation Details |
+|------------|------------------------|
+| **Color Contrast** | All text fields, tags, and labels strictly maintain a minimum contrast ratio of 4.5:1 against their backgrounds. |
+| **Color Independence** | Interface statuses do not rely solely on color codes. Meaningful status indicators (e.g., ✓ Checked, ✗ Out of Stock, ⏰ Reserved) are accompanied by readable helper text. |
+| **Keyboard Navigation** | Full interactive control using sequential standard tab focuses (Tab and Shift+Tab). Action fields, dropdown options, and links are responsive to Enter or Spacebar activation. |
+| **RTL / LTR Bi-directional Support** | Layout adaptation using logical CSS properties (`margin-inline-start`, `padding-inline-end`). Alignment dynamically mirrors based on the HTML `dir` attribute. |
+| **Screen Readers (ARIA)** | Screen elements are marked with descriptive semantics. All visual icons, shopping bags, or user avatars without visible labels are injected with descriptive `aria-label` tags. |
+| **Scale & Responsive Layouts** | Base fonts are set to 16px to guarantee clean readability. Elements scale cleanly up to 200% zoom without breaks. Grids adjust dynamically from 1920px desktop to 320px mobile screens. |
+
+---
