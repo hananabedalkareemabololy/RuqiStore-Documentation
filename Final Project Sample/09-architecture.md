@@ -45,3 +45,13 @@ graph TB
     style Logic fill:#fff3e0,stroke:#f57c00,stroke-width:2px
     style Data fill:#e8f5e9,stroke:#43a047,stroke-width:2px
     style External fill:#fce4ec,stroke:#d81b60,stroke-width:2px
+| Layer                 | Technology         | Justification                                                                                                |
+| --------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Frontend              | React.js           | Component-based structure, fast virtual DOM rendering, and a robust ecosystem for dynamic shopping carts.    |
+| Backend               | Node.js + Express  | Event-driven asynchronous I/O that efficiently handles concurrent customer browsing and checkout operations. |
+| Database              | SQL Server (MSSQL) | Strong relational model, ACID transaction support for order payments, and reliable referential integrity.    |
+| Cache                 | Redis              | Temporary session storage and caching frequently accessed catalog products and active cart states.           |
+| File Storage          | AWS S3             | Highly scalable and secure storage for product images, marketing assets, and invoice PDFs.                   |
+| Authentication        | JWT + bcrypt       | Stateless secure authorization and industry-standard salted password hashing.                                |
+| API Style             | RESTful API        | Clean resource-oriented HTTP routing with easy integration and strong testing support.                       |
+| External Integrations | SendGrid & Stripe  | Reliable transactional email notifications and secure PCI-compliant payment processing.                      |
