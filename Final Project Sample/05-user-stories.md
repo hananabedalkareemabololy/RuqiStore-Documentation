@@ -178,3 +178,10 @@ block-beta
     style B3 fill:#ff9800,color:#fff
     style B4 fill:#9c27b0,color:#fff
     style B5 fill:#f44336,color:#fff
+* **Release 1 (Sprint 1–3):** Top row — Secure Login, Catalog Filters, Cart Session, Stock Synchronization, Audit Trail.
+* **Release 2 (Sprint 4–6):** Middle row — Customer Registration, Wishlist, Price Snapshots, Order Pipeline Tracking.
+* **Release 3 (Sprint 7–8):** Bottom row — Password Reset, Showroom Calendar, Verified Reviews.
+
+---
+
+[← Previous: Use Case Model](./04-use-case-model.md) | [Back to Index](./README.md) | [Next: Domain Model →](./06-domain-model.md)
