@@ -40,7 +40,7 @@ graph TD
     AD --> OM[Manage Orders]
     AD --> BM[Manage Showroom Bookings]
     AD --> AR[Sales Reports]
-
+```
 ## 11.3 Wireframes
 
 ### A. Product Catalog Page (RTL View Example)
