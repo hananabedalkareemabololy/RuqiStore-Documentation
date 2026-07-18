@@ -99,4 +99,4 @@
 
 ---
 
-[← Previous: Stakeholder Analysis](./02-stakeholder-analysis.md) | [Back to Index](./README.md) | [Next: Use Case Model & Descriptions →](./04-use-case-model.md)
+[← Previous: Stakeholder Analysis](./02-stakeholder-analysis.md) | [Back to Index](./00-index.md) | [Next: Use Case Model & Descriptions →](./04-use-case-model.md)
