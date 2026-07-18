@@ -13,6 +13,7 @@ erDiagram
     CUSTOMERS ||--|| CARTS : "has"
     CUSTOMERS ||--o{ ORDERS : "places"
     CUSTOMERS ||--o{ WISHLISTS : "saves"
+    CUSTOMERS ||--o{ SHOWROOM_APPOINTMENTS : "schedules"
 
     CATEGORIES ||--o{ PRODUCTS : "categorizes"
 
@@ -107,6 +108,15 @@ erDiagram
         string action
         string table_affected
         datetime timestamp
+    }
+
+    SHOWROOM_APPOINTMENTS {
+        int appointment_id PK
+        int customer_id FK
+        string showroom_location
+        datetime appointment_date
+        string time_slot
+        string status
     }
 ```
 ## 8.2 Normalized Schema (3NF)
@@ -217,6 +227,17 @@ UNIQUE(customer_id, product_id)
 ```
 
 This constraint prevents the same customer from saving the same product more than once.
+
+### showroom_appointments
+
+| Column | Type | Constraints | Notes |
+| :--- | :--- | :--- | :--- |
+| appointment_id | INT | PK, AUTO_INCREMENT | Unique appointment identifier |
+| customer_id | INT | FK → customers, ON DELETE CASCADE | The customer booking the visit |
+| showroom_location | VARCHAR(200) | NOT NULL | Target physical showroom branch |
+| appointment_date | DATE | NOT NULL | Scheduled calendar date |
+| time_slot | VARCHAR(50) | NOT NULL | Hourly slot (e.g., "10:00 AM - 11:00 AM") |
+| status | VARCHAR(50) | NOT NULL, DEFAULT 'PENDING_APPROVAL' | State tracking pipeline |
 
 ---
 
