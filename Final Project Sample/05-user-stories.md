@@ -189,4 +189,4 @@ block-beta
 
 ---
 
-[← Previous: Use Case Model](./04-use-case-model.md) | [Back to Index](./README.md) | [Next: Domain Model →](./06-domain-model.md)
+[← Previous: Use Case Model](./04-use-case-model.md) | [Back to Index](./00-index.md) | [Next: Domain Model →](./06-domain-model.md)
