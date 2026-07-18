@@ -14,11 +14,11 @@ This matrix maps user-facing features to their database and service-level implem
 | **FR-01** | User Authentication & Roles | `ApplicationUser` | `ApplicationUsers` | ASP.NET Identity API | Login / Register Pages |
 | **FR-02** | Product Catalog Browsing | `Product`, `Category` | `Products`, `Categories` | `IProductService.GetActiveProducts()` | Products Page (`المنتجات.mp4`) |
 | **FR-03** | Manage Shopping Cart | `Cart`, `CartItem` | `Carts`, `CartItems` | `ICartService.AddToCartAsync()` <br> `ICartService.UpdateCartItemQuantityAsync()` | Curated Collection / Cart (`collection.mp4`) |
-| **FR-04** | Save to Wishlist | `Wishlist` | `Wishlists` | `IWishlistService.AddToWishlistAsync()` | Curated Collection / Cart (`collection.mp4`) |
+| **FR-04** | Save to Wishlist | `Wishlist` | `Wishlists` | `IWishlistService.AddToWishlistAsync()` | Wishlist Page (RTL View Example) |
 | **FR-05** | Checkout & Order Placement | `Order`, `OrderItem` | `Orders`, `OrderItems` | `IOrderService.PlaceOrderAsync()` | Checkout Modal & Summary Sidebar |
-| **FR-06** | System Audit Logging | None | `AuditLogs` | Internal Logging Middleware | Admin Dashboard Log Viewer |
-| **FR-07** | Contact Studio & Inquiry | None | None | `IContactService.SubmitInquiryAsync()` | Connect Us Page (`تواصل معنا.mp4`) |
-
+| **FR-06** | Showroom Appointment | `ShowroomAppointment` | `ShowroomAppointments` | `IWishlistService.MoveToCartAsync()` <br> `POST /api/showroom/appointments` | Showroom Appointment Page (`صالة العرض`) |
+| **FR-07** | System Audit Logging | None | `AuditLogs` | Internal Logging Middleware | Admin Dashboard Log Viewer |
+| **FR-08** | Contact Studio & Inquiry | None | None | `IContactService.SubmitInquiryAsync()` | Connect Us Page (`تواصل معنا.mp4`) |
 ---
 
 ## ⚙️ Non-Functional Requirements Mapping (NFR)
@@ -32,8 +32,7 @@ This matrix maps system constraints, performance, and accessibility targets to t
 | **NFR-U3** | **Localization (RTL/LTR)** | Implements a physical-to-logical CSS compiler using `bootstrap.rtl.min.css` and directory-aware language cookies (`.AspNetCore.Culture`). | `11-ui-ux-design.md` |
 | **NFR-U4** | **Double-Submit Prevention** | Disables transaction buttons immediately upon click and initiates an asynchronous spinner state to prevent concurrent requests. | `11-ui-ux-design.md`, `07-uml-behavioral.md` |
 | **NFR-S1** | **Concurrency Control** | Enforces atomic database transactions (`IDbContextTransaction`) during stock deduction to lock rows and prevent overselling. | `10-detailed-design.md`, `07-uml-behavioral.md` |
-| **NFR-D1** | **Price Consistency** | Implements a **Price Freeze** constraint that saves the current price to `OrderItem.PriceSnapshot` instead of linking back dynamically. | `04_DATABASE_DESIGN.md`, `10-detailed-design.md` |
-
+| **NFR-D1** | **Price Consistency** | Implements a **Price Freeze** constraint that saves the current price to `OrderItem.PriceSnapshot` instead of linking back dynamically. | `08-database-design.md`, `10-detailed-design.md` |
 ---
 
 ## 📑 Traceability Rules & Verification Checklist
