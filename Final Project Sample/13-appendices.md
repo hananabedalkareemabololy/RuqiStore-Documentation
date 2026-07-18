@@ -9,7 +9,7 @@
 | BCrypt | A password hashing algorithm designed to resist brute-force attacks, used for securing user credentials. |
 | CRUD | Create, Read, Update, Delete — the four basic operations performed on product catalog and order data. |
 | DTO | Data Transfer Object — a lightweight object used to pass formatted data securely between system layers. |
-| ER Diagram | Entity-Relationship Diagram — a visual model of database tables (`products`, `orders`, `users`) and their relationships. |
+| ER Diagram | Entity-Relationship Diagram — a visual model of database tables (`Products`, `Orders`, `ShowroomAppointments`) and their relationships. |
 | MoSCoW | Prioritization method: Must have, Should have, Could have, Won't have (used for platform roadmap). |
 | NFR | Non-Functional Requirement — a quality attribute like site performance, checkout security, or responsive usability. |
 | Price Snapshot | A persistent copy of a product's price saved in the order history table at checkout to isolate it from future catalog changes. |
@@ -19,7 +19,7 @@
 | SRS | Software Requirements Specification — a document describing the complete scope and specifications of the Ruqi Store system. |
 | Three-Tier | An architecture pattern separating the presentation, business logic (Services), and data storage (SQL Server) layers. |
 | UML | Unified Modeling Language — a standardized set of diagrams used for modeling the e-commerce software structure. |
-| Use Case | A description of how a user achieves a specific goal (e.g., checkout, booking a showroom consultation). |
+| Use Case | A description of how a user achieves a specific goal (e.g., checkout, booking a showroom appointment). |
 | WCAG | Web Content Accessibility Guidelines — international standards used to ensure the retail platform is digitally accessible. |
 
 ## Appendix B: References
@@ -52,9 +52,9 @@
 | 3 | Use Case Diagram | Use Case Diagram | 4.2 |
 | 4 | User Story Map | Block Diagram | 5.3 |
 | 5 | Domain Model / Class Diagram | Class Diagram | 6.2 |
-| 6 | Enumeration Types (Order/Booking Status) | Class Diagram | 6.4 |
+| 6 | Enumeration Types (Order/Appointment Status) | Class Diagram | 6.4 |
 | 7 | Secure Checkout Sequence | Sequence Diagram | 7.1 |
-| 8 | Book Showroom Consultation Sequence | Sequence Diagram | 7.2 |
+| 8 | Book Showroom Appointment Sequence | Sequence Diagram | 7.2 |
 | 9 | Add to Cart & Checkout Activity | Activity Diagram | 7.3 |
 | 10 | Order Fulfillment State Machine | State Diagram | 7.4 |
 | 11 | Stock Validation Activity | Activity Diagram | 7.5 |
