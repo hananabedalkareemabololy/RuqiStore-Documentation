@@ -145,8 +145,5 @@ Maintain an attractive online storefront that improves customer engagement and i
 
 # Navigation
 
-← Previous: [Project Introduction](../01-project-introduction/README.md)
+← Previous: [Project Introduction](../01-introduction.md) | [Back to Index](./README.md) |[Requirements Specification](../03-requirements.md)
 
-↩ Back to [Documentation Index](../README.md)
-
-→ Next: [Requirements Specification](../03-requirements-specification/README.md)
