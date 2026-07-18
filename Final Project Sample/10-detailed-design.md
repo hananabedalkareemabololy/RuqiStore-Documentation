@@ -77,7 +77,15 @@ public class FlashSaleDiscountStrategy : IDiscountStrategy
         return originalTotal * 0.80m;
     }
 }
+
 ```
+public interface IWishlistService
+{
+    Task<IEnumerable<CartItemDto>> GetWishlistAsync(string userId);
+    Task<bool> AddToWishlistAsync(string userId, int productId);
+    Task<bool> RemoveFromWishlistAsync(string userId, int productId);
+    Task<bool> MoveToCartAsync(string userId, int productId);
+}
 ## B. ICartService
 
 **Responsibility:**  
@@ -280,15 +288,15 @@ Customer views their finalized purchase invoice and order status.
 | 404 | Not found | `{ "error": "Order ID not found." }` |
 
 ---
-## POST /api/showroom/bookings
+## POST /api/showroom/appointments
 
 **Purpose:**  
-Customer schedules a consultation session in the virtual or physical showroom.
+Customer schedules a consultation session in the showroom.
 
 | Field | Value |
 |---|---|
 | Method | POST |
-| URL | `/api/showroom/bookings` |
+| URL | `/api/showroom/appointments` |
 | Authentication | Bearer JWT (Customer role) |
 | Content-Type | `application/json` |
 
@@ -296,26 +304,60 @@ Customer schedules a consultation session in the virtual or physical showroom.
 
 ```json
 {
-  "bookingDate": "2026-07-20",
-  "bookingTime": "14:00:00",
-  "consultationType": "VIRTUAL_ROOM_DESIGN"
+  "showroomLocation": "Main Branch",
+  "appointmentDate": "2026-07-20",
+  "timeSlot": "14:00:00"
 }
+
+
 ```
 
 ### Success Response (201 Created)
 
 ```json
 {
-  "bookingId": 302,
+  "appointmentId": 302,
   "customerId": 88,
-  "bookingDate": "2026-07-20",
-  "bookingTime": "14:00:00",
-  "consultationType": "VIRTUAL_ROOM_DESIGN",
-  "status": "CONFIRMED",
-  "meetingLink": "https://meet.ruqistore.com/showroom/302"
+  "showroomLocation": "Main Branch",
+  "appointmentDate": "2026-07-20",
+  "timeSlot": "14:00:00",
+  "status": "PENDING_APPROVAL"
+
+}
+
+---
+
+## POST /api/wishlists/items
+
+**Purpose:**  
+Customer saves an item to their wishlist.
+
+| Field | Value |
+|---|---|
+| Method | POST |
+| URL | `/api/wishlists/items` |
+| Authentication | Bearer JWT (Customer role) |
+| Content-Type | `application/json` |
+
+### Request Body
+
+```json
+{
+  "productId": 204
+}
+
+
+
+```
+### Success Response (201 Created)
+```json
+{
+  "wishlistId": 12,
+  "customerId": 88,
+  "productId": 204,
+  "createdAt": "2026-07-18T10:00:00Z"
 }
 ```
-
 ---
 # 10.7 Error Handling Strategy
 
