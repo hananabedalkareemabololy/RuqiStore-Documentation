@@ -173,43 +173,35 @@ flowchart TD
 ```
 
 ---
-
 ## 7.4 State Machine Diagram: Order Lifecycle
 
 ```mermaid
 stateDiagram-v2
 
-    [*] --> PendingPayment
+    [*] --> Pending
 
-    PendingPayment --> Paid : Payment Approved
-    PendingPayment --> Cancelled : Payment Timeout
+    Pending --> Processing : Payment Approved
+    Pending --> Cancelled : Payment Timeout / Manual Cancellation
 
-    Paid --> Processing
-    Paid --> Refunded
+    Processing --> Shipped : Dispatched from Warehouse
+    Processing --> Cancelled : Cancelled before Shipping
 
-    Processing --> Shipped
-    Processing --> Refunded
-
-    Shipped --> Delivered
-    Shipped --> Returned
-
-    Returned --> Refunded
+    Shipped --> Delivered : Customer Received Items
 
     Delivered --> [*]
     Cancelled --> [*]
-    Refunded --> [*]
 ```
 
 ### State Descriptions & Rules
 
+
 | State | Description | Allowed Transitions |
-|-------|-------------|---------------------|
-| **PendingPayment** | Payment is pending and stock is reserved. | Paid, Cancelled |
-| **Paid** | Payment completed successfully. | Processing, Refunded |
-| **Processing** | Warehouse is preparing the order. | Shipped, Refunded |
-| **Shipped** | Order is with the courier. | Delivered, Returned |
-| **Delivered** | Final successful state. | None |
-| **Returned / Cancelled** | Order cancelled or returned. | Refunded (if paid) |
+| :--- | :--- | :--- |
+| **Pending** | Order is created, payment review is pending, and stock is reserved. | Processing, Cancelled |
+| **Processing** | Payment is verified, and the warehouse manager is preparing the furniture order. | Shipped, Cancelled |
+| **Shipped** | Order has been handed over to the delivery team. | Delivered |
+| **Delivered** | Final successful state. The furniture is delivered to the customer. | None |
+| **Cancelled** | The order is terminated, and any reserved stock is immediately released. | None |
 
 ---
 
