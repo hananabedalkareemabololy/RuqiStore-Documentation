@@ -129,6 +129,21 @@ classDiagram
         +approveReview()
         +flagReview()
     }
+class Wishlist {
+        -int wishlistId
+        -datetime createdAt
+        +addItem(Product product)
+        +removeItem(int productId)
+        +clearWishlist()
+    }
+
+    class AuditLog {
+        -int logId
+        -int userId
+        -string actionType
+        -string ipAddress
+        -datetime timestamp
+    }
 
     %% Inheritance
     User <|-- Customer
@@ -145,6 +160,9 @@ classDiagram
     Customer "1" --> "*" ShowroomAppointment : schedules
     Customer "1" --> "*" ProductReview : writes
     Product "1" --> "*" ProductReview : receives
+    Customer "1" --> "1" Wishlist : owns
+    Wishlist "1" --> "*" Product : contains
+    User "1" --> "*" AuditLog : generates
 ```
 ## 6.3 Class Relationship Summary
 
@@ -158,6 +176,9 @@ classDiagram
 | **Product → OrderItem** | Association (1:*) | Each order item stores a `priceSnapshot` to preserve historical pricing. |
 | **Customer → ShowroomAppointment** | Association (1:*) | A customer may schedule multiple showroom appointments. |
 | **Customer → ProductReview** | Association (1:*) | A verified customer may submit one review per purchased product. |
+| **Customer → Wishlist** | Composition (1:1) | A wishlist belongs exclusively to one registered customer. |
+| **Wishlist → Product** | Association (1:*) | A wishlist contains multiple products selected by the user. |
+| **User → AuditLog** | Association (1:*) | A user (specifically administrators) generates multiple system logs during operations. |
 
 ---
 
@@ -199,6 +220,6 @@ classDiagram
 ```
 
 ---
-[← Previous: User Stories](./06-domain-model.md) | [Back to Index](./README.md) | [Next:  UML Behavioral Models →](./07-uml-behavioral.md)
+[← Previous: User Stories](./05-user-stories.md) | [Back to Index](./00-index.md) | [Next:  UML Behavioral Models →](./07-uml-behavioral.md)
 
 
