@@ -74,4 +74,4 @@ This project follows the **Agile (Scrum)** framework with 2-week sprints. The ra
 
 ---
 
-[← Back to Index](./README.md) | [Next: Stakeholder Analysis →](./02-stakeholder-analysis.md)
+[← Back to Index](./00-index.md) | [Next: Stakeholder Analysis →](./02-stakeholder-analysis.md)
