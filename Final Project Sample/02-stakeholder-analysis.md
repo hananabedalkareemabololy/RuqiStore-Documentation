@@ -144,6 +144,6 @@ Maintain an attractive online storefront that improves customer engagement and i
 ---
 
 # Navigation
+[← Previous: Use Case Model](./01-introduction.md) | [Back to Index](./00-index.md) | [Next:Requirements Specification →](./03-requirements.md)
 
-← Previous: [Project Introduction](../01-introduction.md) | [Back to Index](./README.md) |[Requirements Specification](../03-requirements.md)
 
