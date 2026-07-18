@@ -71,6 +71,7 @@ graph LR
         CartUI["Shopping Cart View"]
         CheckoutUI["Checkout Page"]
         ShowroomUI["Showroom Scheduler"]
+        WishlistUI["Wishlist View"]
     end
 
     subgraph Backend["Backend API Controllers"]
@@ -89,6 +90,8 @@ graph LR
         BookS["Appointment Service"]
         MailS["Notification Service"]
         PayS["Payment Integration Service"]
+        WishlistS["Wishlist Service"]
+        AuditS["Audit Logging Service"]
     end
 
     subgraph Data["Data Access Repositories"]
@@ -97,6 +100,8 @@ graph LR
         CartR["Cart Repository"]
         OrderR["Order Repository"]
         BookR["Appointment Repository"]
+        WishlistR["Wishlist Repository"]
+        AuditR["Audit Log Repository"]
     end
 
     subgraph External["External Integrations"]
