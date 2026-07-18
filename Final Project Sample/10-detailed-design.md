@@ -389,4 +389,4 @@ This enables horizontal scaling during seasonal traffic peaks while maintaining 
 
 ---
 
-[← Previous: Architecture](./09-architectural-design.md) | [Back to Index](./00-index.md) | [Next: UI/UX Design →](./11-ui-ux-design.md)
+[← Previous: Architecture](./09-architecture.md) | [Back to Index](./00-index.md) | [Next: UI/UX Design →](./11-ui-ux-design.md)
