@@ -146,3 +146,58 @@ classDiagram
     Customer "1" --> "*" ProductReview : writes
     Product "1" --> "*" ProductReview : receives
 ```
+## 6.3 Class Relationship Summary
+
+| Relationship | Type | Description |
+| :--- | :--- | :--- |
+| **User → Customer / StoreManager** | Inheritance | All active roles inherit identity properties. Each child class extends the base `User` class with role-specific behavior. |
+| **Category → Product** | Association (1:*) | A category contains many products. Every product belongs to exactly one category. |
+| **Customer → Cart** | Composition (1:1) | A cart exists only for its owning customer and cannot exist independently. |
+| **Cart → CartItem** | Composition (1:*) | Cart items are dependent child entities. Removing a cart removes all associated cart items. |
+| **Order → OrderItem** | Composition (1:*) | Order items represent immutable purchase lines belonging exclusively to a single order. |
+| **Product → OrderItem** | Association (1:*) | Each order item stores a `priceSnapshot` to preserve historical pricing. |
+| **Customer → ShowroomAppointment** | Association (1:*) | A customer may schedule multiple showroom appointments. |
+| **Customer → ProductReview** | Association (1:*) | A verified customer may submit one review per purchased product. |
+
+---
+
+## 6.4 Enumeration Types
+
+```mermaid
+classDiagram
+    class Role {
+        <<enumeration>>
+        CUSTOMER
+        STORE_MANAGER
+        ACCOUNTANT
+        ADMINISTRATOR
+    }
+
+    class OrderStatus {
+        <<enumeration>>
+        PENDING
+        PROCESSING
+        SHIPPED
+        DELIVERED
+        CANCELLED
+    }
+
+    class AppointmentStatus {
+        <<enumeration>>
+        PENDING_APPROVAL
+        APPROVED
+        RESCHEDULED
+        CANCELLED
+    }
+
+    class BillingStatus {
+        <<enumeration>>
+        PENDING_PAYMENT
+        PAID
+        REFUNDED
+    }
+```
+
+---
+
+← **Previous:** User Stories | **Back to Index** | **Next:** UML Behavioral Models →
