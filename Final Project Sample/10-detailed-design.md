@@ -324,7 +324,7 @@ Customer schedules a consultation session in the showroom.
   "status": "PENDING_APPROVAL"
 
 }
-
+```
 ---
 
 ## POST /api/wishlists/items
