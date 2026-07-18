@@ -26,7 +26,7 @@ The report covers every phase of the Software Development Lifecycle (SDLC) from 
 | 5  | [05. User Stories & Acceptance Criteria](./05-user-stories.md) | Agile stories mapped with formal acceptance criteria. | 2 |
 | 6  | [06. Domain Model & Object Structure](./06-domain-model.md) | Conceptual schema, entities, and static business relationships. | 3 |
 | 7  | [07. UML Behavioral Diagrams](./07-uml-behavioral.md) | Sequence diagrams mapping checkout and inventory synchronization. | 3 |
-| 8  | [08. Database Design & Schema](./04_DATABASE_DESIGN.md) | ER diagrams, physical tables, keys, and constraints. | 3 |
+| 8  | [08. Database Design & Schema](./08-database-design.md) | ER diagrams, physical tables, keys, and constraints. | 3 |
 | 9  | [09. Architectural Overview](./09-architecture.md) | N-Tier layered architecture style and request lifecycles. | 2 |
 | 10 | [10. Detailed Component Design](./10-detailed-design.md) | Service interfaces, API contracts, and business validations. | 2 |
 | 11 | [11. UI/UX Design](./11-ui-ux-design.md) | Page specifications, responsive layouts, localization, and RTL. | 2 |
