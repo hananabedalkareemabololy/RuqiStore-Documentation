@@ -199,5 +199,6 @@ classDiagram
 ```
 
 ---
+[← Previous: User Stories](./06-domain-model.md) | [Back to Index](./README.md) | [Next:  UML Behavioral Models →](./07-uml-behavioral.md)
 
-← **Previous:** User Stories | **Back to Index** | **Next:** UML Behavioral Models →
+
