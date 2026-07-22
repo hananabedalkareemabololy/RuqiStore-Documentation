@@ -1,0 +1,204 @@
+# 02 — Stakeholder & User Role Analysis
+
+## Ruqi Store System
+
+---
+
+# 2.1 Stakeholder Register
+
+| # | Stakeholder | Role | Interest | Influence | Key Concern |
+|---|---|---|---|---|---|
+| **1** | **Youssef Al-Ruqi** | Store Owner | Strategic growth and business success | High | Revenue growth, inventory accuracy, customer satisfaction |
+| **2** | **Sarah Mansour** | Store Manager | Daily store operations | High | Product management, inventory control, order fulfillment |
+| **3** | **Ahmed Rayyan** | Payment Officer | Payment verification | High | Payment accuracy, transaction records, payment logs |
+| **4** | **Deema Khaled** | Customer | Purchasing furniture | Medium | Easy shopping experience, order tracking, secure checkout |
+| **5** | **Khaled Al-Najjar** | Administrator | System administration | High | Security, user management, audit logs, system reliability |
+
+---
+
+# 2.2 Stakeholder Map
+
+The following chart classifies stakeholders according to their influence and interest in the Ruqi Store system.
+
+```mermaid
+quadrantChart
+    title Stakeholder Influence vs Interest
+
+    x-axis Low Interest --> High Interest
+    y-axis Low Influence --> High Influence
+
+    quadrant-1 Manage Closely
+    quadrant-2 Keep Satisfied
+    quadrant-3 Monitor
+    quadrant-4 Keep Informed
+
+    "Store Owner": [0.90,0.95]
+    "Store Manager": [0.82,0.85]
+    "Administrator": [0.70,0.90]
+    "Payment Officer": [0.70,0.80]
+    "Customer": [0.92,0.45]
+```
+
+---
+
+# 2.3 Stakeholder Needs
+
+## Store Owner (Youssef Al-Ruqi)
+
+### Responsibilities
+
+- Define business goals.
+- Monitor overall store performance.
+- Review revenue reports.
+- Monitor inventory performance.
+
+### Needs
+
+- Sales dashboards.
+- Business reports.
+- Revenue statistics.
+- Product performance analysis.
+- Inventory summaries.
+
+### Main Goal
+
+Increase online furniture sales while maintaining efficient inventory management and high customer satisfaction.
+
+---
+
+## Store Manager (Sarah Mansour)
+
+### Responsibilities
+
+- Manage furniture products.
+- Manage categories.
+- Update inventory.
+- Process customer orders.
+
+### Needs
+
+- Fast product management interface.
+- Product image management.
+- Inventory monitoring.
+- Low-stock alerts.
+- Sales dashboard.
+
+### Main Goal
+
+Maintain an accurate product catalog and ensure efficient order fulfillment.
+
+---
+
+## Payment Officer (Ahmed Rayyan)
+
+### Responsibilities
+
+- Review payment submissions.
+- Approve or reject payments.
+- Maintain payment history.
+
+### Needs
+
+- Payment dashboard.
+- Pending payment list.
+- Payment history.
+- Payment logs.
+- Rejection reason tracking.
+
+### Main Goal
+
+Ensure every customer payment is accurately verified and recorded.
+
+---
+
+## Customer (Deema Khaled)
+
+### Responsibilities
+
+- Browse furniture products.
+- Place orders.
+- Track deliveries.
+- Submit verified reviews.
+
+### Needs
+
+- Easy product browsing.
+- Powerful search and filtering.
+- Persistent shopping cart.
+- Secure checkout.
+- Order tracking.
+- Address management.
+- Responsive bilingual interface.
+
+### Main Goal
+
+Purchase furniture easily through a secure and user-friendly online shopping experience.
+
+> **Note:** Wishlist is planned as a future enhancement and is not available in the current version.
+
+---
+
+## Administrator (Khaled Al-Najjar)
+
+### Responsibilities
+
+- Manage users.
+- Assign roles.
+- Moderate reviews.
+- Review audit logs.
+
+### Needs
+
+- Role-Based Access Control (RBAC).
+- Audit logging.
+- User management.
+- System monitoring.
+- Security management.
+
+### Main Goal
+
+Maintain platform security, data integrity, and proper access control.
+
+---
+
+# 2.4 Stakeholder Priority
+
+| Stakeholder | Priority | Reason |
+|---|---|---|
+| Store Owner | Critical | Defines business objectives |
+| Store Manager | Critical | Responsible for daily operations |
+| Administrator | Critical | Maintains security and system integrity |
+| Payment Officer | High | Controls payment verification |
+| Customer | High | Primary system user |
+
+---
+
+# 2.5 User Roles Summary
+
+The Ruqi Store system defines four application roles:
+
+| Role | Description |
+|---|---|
+| **Customer** | Browse products, place orders, manage addresses, submit verified reviews |
+| **Store Manager** | Manage products, inventory, categories, and order fulfillment |
+| **Payment Officer** | Verify customer payments and maintain payment records |
+| **Administrator** | Manage users, roles, audit logs, and review moderation |
+
+All protected pages use ASP.NET Core Identity role-based authorization:
+
+```csharp
+[Authorize(Roles = "Customer")]
+[Authorize(Roles = "StoreManager")]
+[Authorize(Roles = "PaymentOfficer")]
+[Authorize(Roles = "Admin")]
+```
+
+---
+
+# Navigation
+
+[← Previous: Project Overview](./01_Project_Overview.md)
+
+[Back to Index](./00_Index.md)
+
+[Next: Requirements Specification →](./03_Requirements.md)
