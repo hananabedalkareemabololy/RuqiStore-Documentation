@@ -15,7 +15,31 @@ These roles represent the main users who interact with the Ruqi Store system and
 
 ---
 
-# 2.2 Stakeholder Register
+## 2.2 Stakeholder Map
+
+The following map visualizes the four primary stakeholder roles and their relationship with the main Ruqi Store system functions.
+
+```mermaid
+flowchart TB
+
+    RS["Ruqi Store System"]
+
+    C["Customer"]
+    SM["Store Manager"]
+    PO["Payment Officer"]
+    GA["General Administrator"]
+
+    C -->|"Purchasing Journey"| RS
+    SM -->|"Store Operations"| RS
+    PO -->|"Payment Confirmation"| RS
+    GA -->|"System Administration"| RS
+```
+
+The four roles represent the main users who interact with the Ruqi Store system and its management functions.
+
+---
+
+## 2.3 Stakeholder Register
 
 |   #   | Stakeholder               | Role                     | Interest                    | Main Responsibilities                                                                                                               |
 | :---: | :------------------------ | :----------------------- | :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
@@ -28,7 +52,7 @@ The presentation explicitly defines these four roles and their main responsibili
 
 ---
 
-# 2.3 Stakeholder Roles & Needs
+# 2.4 Stakeholder Needs Summary
 
 ---
 
@@ -199,7 +223,7 @@ The administration dashboard includes user management, permission management, re
 
 ---
 
-# 2.4 Main Permission Matrix
+# 2.5 Main Permission Matrix
 
 The following matrix summarizes the main permissions defined for the four system roles:
 
@@ -215,45 +239,31 @@ This matrix follows the main permission structure presented in the Ruqi Store pr
 
 ---
 
-# 2.5 Stakeholder Interaction Summary
+# 2.6 Stakeholder Interaction Summary
 
 The main interaction between the four roles can be summarized as follows:
 
 **Customer**
 
-↓
-
-Places Order
-
-↓
+↓ Places Order
 
 **Store Manager**
 
-↓
-
-Manages Order and Fulfillment
-
-↓
+↓ Manages Order and Fulfillment
 
 **Payment Officer**
 
-↓
-
-Reviews and Confirms Payment
-
-↓
+↓ Reviews and Confirms Payment
 
 **General Administrator**
 
-↓
-
-Manages Users, Permissions, Reviews, Reports, and Audit Logs
+↓ Manages Users, Permissions, Reviews, Reports, and Audit Logs
 
 The Customer is primarily responsible for the purchasing journey, while the Store Manager handles store operations, the Payment Officer handles payment confirmation, and the General Administrator handles overall system administration.
 
 ---
 
-# 2.6 Stakeholder Responsibilities Summary
+# 2.7 Stakeholder Responsibilities Summary
 
 | Stakeholder               | Primary Responsibility                                                 |
 | :------------------------ | :--------------------------------------------------------------------- |
@@ -261,16 +271,6 @@ The Customer is primarily responsible for the purchasing journey, while the Stor
 | **Store Manager**         | Manage catalog, inventory, orders, fulfillment, and sales information. |
 | **Payment Officer**       | Review and confirm customer payments.                                  |
 | **General Administrator** | Manage users, permissions, reviews, reports, and audit logs.           |
-
----
-
-# 2.7 Stakeholder Summary
-
-The Ruqi Store system is centered around four primary system roles:
-
-**Customer → Store Manager → Payment Officer → General Administrator**
-
-The Customer represents the purchasing side of the system, while the Store Manager manages store operations, the Payment Officer manages payment verification, and the General Administrator maintains system-wide administrative control.
 
 ---
 
