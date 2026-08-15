@@ -33,6 +33,7 @@ quadrantChart
     "Store Manager": [0.90, 0.85]
     "Payment Officer": [0.75, 0.80]
     "Customer": [0.95, 0.55]
+---
 > **Note:** The positions in the map represent the relative importance of each system role for requirements analysis and are not measurements of individual people.
 
 ---
