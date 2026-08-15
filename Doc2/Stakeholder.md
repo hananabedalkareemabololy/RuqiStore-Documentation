@@ -33,17 +33,15 @@ quadrantChart
     "Store Manager": [0.90, 0.85]
     "Payment Officer": [0.75, 0.80]
     "Customer": [0.95, 0.55]
-**Note:** The positions in the map represent the relative importance of each system role for requirements analysis and are not measurements of individual people.
-```
+> **Note:** The positions in the map represent the relative importance of each system role for requirements analysis and are not measurements of individual people.
+
 ---
 
 # 2.3 Stakeholder Needs Summary
 
----
-
 ## Customer
 
-### Needs:
+### Needs
 
 - Easy access to the furniture catalog.
 - Search and filtering by product name, category, price, material, and availability.
@@ -58,7 +56,7 @@ quadrantChart
 - Responsive Arabic and English interface.
 - Ability to save up to 5 delivery addresses.
 
-### Key Goal:
+### Key Goal
 
 Provide a reliable and convenient online furniture shopping experience that allows customers to discover products, place orders, track purchases, and review products with confidence.
 
@@ -66,7 +64,7 @@ Provide a reliable and convenient online furniture shopping experience that allo
 
 ## Store Manager
 
-### Needs:
+### Needs
 
 - Fast and intuitive management dashboard.
 - Complete access to the furniture product catalog.
@@ -80,7 +78,7 @@ Provide a reliable and convenient online furniture shopping experience that allo
 - Sales and inventory analytics.
 - Preservation of historical order prices when current product prices change.
 
-### Key Goal:
+### Key Goal
 
 Manage the store's products, inventory, and order fulfillment efficiently while maintaining accurate stock levels and preserving historical order data.
 
@@ -88,7 +86,7 @@ Manage the store's products, inventory, and order fulfillment efficiently while 
 
 ## Payment Officer
 
-### Needs:
+### Needs
 
 - Dedicated payment management dashboard.
 - Access to orders requiring payment review.
@@ -99,7 +97,7 @@ Manage the store's products, inventory, and order fulfillment efficiently while 
 - Separation between payment management and fulfillment management.
 - Accurate and consistent payment status information.
 
-### Key Goal:
+### Key Goal
 
 Ensure that customer payments are reviewed and recorded accurately while maintaining a clear separation between payment processing and order fulfillment responsibilities.
 
@@ -107,7 +105,7 @@ Ensure that customer payments are reviewed and recorded accurately while maintai
 
 ## Administrator
 
-### Needs:
+### Needs
 
 - Centralized administration dashboard.
 - Complete user management.
@@ -121,7 +119,7 @@ Ensure that customer payments are reviewed and recorded accurately while maintai
 - Protection against unauthorized administrative actions.
 - Prevention of administrators modifying their own permissions or deactivating their own account.
 
-### Key Goal:
+### Key Goal
 
 Maintain complete system oversight, security, accountability, and administrative control while preserving the integrity of user, order, review, and audit data.
 
@@ -136,42 +134,57 @@ Maintain complete system oversight, security, accountability, and administrative
 | **Payment Officer** | High | Responsible for payment review, confirmation, rejection, and payment records |
 | **Customer** | High | Direct end user whose shopping experience and successful orders are central to the system |
 
-2.5 Stakeholder Responsibilities Summary
-Stakeholder	Main Responsibilities
-Customer	Browse products, search and filter the catalog, manage cart, checkout, place orders, track orders, manage addresses, and submit verified reviews
-Store Manager	Manage products, categories, inventory, product images, order fulfillment, and sales-related dashboard information
-Payment Officer	Review payment submissions, update payment status, and maintain payment history
-Administrator	Manage users and roles, oversee orders, moderate reviews, generate reports, and monitor immutable audit logs
-2.6 Role Boundaries
+---
+
+# 2.5 Stakeholder Responsibilities Summary
+
+| Stakeholder | Main Responsibilities |
+| :--- | :--- |
+| **Customer** | Browse products, search and filter the catalog, manage cart, checkout, place orders, track orders, manage addresses, and submit verified reviews |
+| **Store Manager** | Manage products, categories, inventory, product images, order fulfillment, and sales-related dashboard information |
+| **Payment Officer** | Review payment submissions, update payment status, and maintain payment history |
+| **Administrator** | Manage users and roles, oversee orders, moderate reviews, generate reports, and monitor immutable audit logs |
+
+---
+
+# 2.6 Role Boundaries
 
 The Ruqi Store system maintains clear boundaries between the four official roles.
 
-Customer cannot manage store products, inventory, payments, users, or administrative functions.
-Store Manager manages products, categories, inventory, and fulfillment status but does not manage payment status.
-Payment Officer manages payment status but does not manage product inventory or fulfillment status.
-Administrator has system-wide administrative oversight but does not replace the Store Manager's operational responsibilities or the Payment Officer's payment workflow.
-Administrative permissions are protected through ASP.NET Core Identity role-based authorization.
-Customer data isolation is enforced through the Service Layer so customers can only access their own carts, orders, addresses, and reviews.
-2.7 Stakeholder-to-System Feature Mapping
-Feature	Customer	Store Manager	Payment Officer	Administrator
-Browse Product Catalog	✅	✅	✅	✅
-Search & Filter Products	✅	✅	✅	✅
-Shopping Cart	✅	❌	❌	❌
-Checkout & Order Placement	✅	❌	❌	❌
-Order Tracking	✅	❌	❌	❌
-Product Reviews	✅	❌	❌	✅ Moderation
-Product Management	❌	✅	❌	❌
-Category Management	❌	✅	❌	❌
-Inventory Management	❌	✅	❌	❌
-Fulfillment Status Management	❌	✅	❌	❌
-Payment Status Management	❌	❌	✅	❌
-Payment History	❌	❌	✅	✅ Oversight
-User Management	❌	❌	❌	✅
-Role Assignment / Revocation	❌	❌	❌	✅
-Order Oversight	Own Orders	All Orders	Payment-related Orders	All Orders
-CSV Reports	❌	❌	❌	✅
-Audit Logs	❌	❌	❌	✅
-Address Book	✅	❌	❌	❌
-Navigation
+- **Customer** cannot manage store products, inventory, payments, users, or administrative functions.
+- **Store Manager** manages products, categories, inventory, and fulfillment status but does not manage payment status.
+- **Payment Officer** manages payment status but does not manage product inventory or fulfillment status.
+- **Administrator** has system-wide administrative oversight but does not replace the Store Manager's operational responsibilities or the Payment Officer's payment workflow.
+- Administrative permissions are protected through ASP.NET Core Identity role-based authorization.
+- Customer data isolation is enforced through the Service Layer so customers can only access their own carts, orders, addresses, and reviews.
 
-← Previous: Project Introduction | Back to Index | Next: Requirements Specification →
+---
+
+# 2.7 Stakeholder-to-System Feature Mapping
+
+| Feature | Customer | Store Manager | Payment Officer | Administrator |
+| :--- | :---: | :---: | :---: | :---: |
+| Browse Product Catalog | ✅ | ✅ | ✅ | ✅ |
+| Search & Filter Products | ✅ | ✅ | ✅ | ✅ |
+| Shopping Cart | ✅ | ❌ | ❌ | ❌ |
+| Checkout & Order Placement | ✅ | ❌ | ❌ | ❌ |
+| Order Tracking | ✅ | ❌ | ❌ | ❌ |
+| Product Reviews | ✅ | ❌ | ❌ | ✅ Moderation |
+| Product Management | ❌ | ✅ | ❌ | ❌ |
+| Category Management | ❌ | ✅ | ❌ | ❌ |
+| Inventory Management | ❌ | ✅ | ❌ | ❌ |
+| Fulfillment Status Management | ❌ | ✅ | ❌ | ❌ |
+| Payment Status Management | ❌ | ❌ | ✅ | ❌ |
+| Payment History | ❌ | ❌ | ✅ | ✅ Oversight |
+| User Management | ❌ | ❌ | ❌ | ✅ |
+| Role Assignment / Revocation | ❌ | ❌ | ❌ | ✅ |
+| Order Oversight | Own Orders | All Orders | Payment-related Orders | All Orders |
+| CSV Reports | ❌ | ❌ | ❌ | ✅ |
+| Audit Logs | ❌ | ❌ | ❌ | ✅ |
+| Address Book | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+# Navigation
+
+[← Previous: Project Introduction](./01-introduction.md) | [Back to Index](./00-index.md) | [Next: Requirements Specification →](./03-requirements.md)
