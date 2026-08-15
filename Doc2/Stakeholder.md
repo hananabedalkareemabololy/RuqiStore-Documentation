@@ -135,3 +135,43 @@ Maintain complete system oversight, security, accountability, and administrative
 | **Store Manager** | Critical | Controls the product catalog, inventory, categories, and order fulfillment |
 | **Payment Officer** | High | Responsible for payment review, confirmation, rejection, and payment records |
 | **Customer** | High | Direct end user whose shopping experience and successful orders are central to the system |
+
+2.5 Stakeholder Responsibilities Summary
+Stakeholder	Main Responsibilities
+Customer	Browse products, search and filter the catalog, manage cart, checkout, place orders, track orders, manage addresses, and submit verified reviews
+Store Manager	Manage products, categories, inventory, product images, order fulfillment, and sales-related dashboard information
+Payment Officer	Review payment submissions, update payment status, and maintain payment history
+Administrator	Manage users and roles, oversee orders, moderate reviews, generate reports, and monitor immutable audit logs
+2.6 Role Boundaries
+
+The Ruqi Store system maintains clear boundaries between the four official roles.
+
+Customer cannot manage store products, inventory, payments, users, or administrative functions.
+Store Manager manages products, categories, inventory, and fulfillment status but does not manage payment status.
+Payment Officer manages payment status but does not manage product inventory or fulfillment status.
+Administrator has system-wide administrative oversight but does not replace the Store Manager's operational responsibilities or the Payment Officer's payment workflow.
+Administrative permissions are protected through ASP.NET Core Identity role-based authorization.
+Customer data isolation is enforced through the Service Layer so customers can only access their own carts, orders, addresses, and reviews.
+2.7 Stakeholder-to-System Feature Mapping
+Feature	Customer	Store Manager	Payment Officer	Administrator
+Browse Product Catalog	✅	✅	✅	✅
+Search & Filter Products	✅	✅	✅	✅
+Shopping Cart	✅	❌	❌	❌
+Checkout & Order Placement	✅	❌	❌	❌
+Order Tracking	✅	❌	❌	❌
+Product Reviews	✅	❌	❌	✅ Moderation
+Product Management	❌	✅	❌	❌
+Category Management	❌	✅	❌	❌
+Inventory Management	❌	✅	❌	❌
+Fulfillment Status Management	❌	✅	❌	❌
+Payment Status Management	❌	❌	✅	❌
+Payment History	❌	❌	✅	✅ Oversight
+User Management	❌	❌	❌	✅
+Role Assignment / Revocation	❌	❌	❌	✅
+Order Oversight	Own Orders	All Orders	Payment-related Orders	All Orders
+CSV Reports	❌	❌	❌	✅
+Audit Logs	❌	❌	❌	✅
+Address Book	✅	❌	❌	❌
+Navigation
+
+← Previous: Project Introduction | Back to Index | Next: Requirements Specification →
