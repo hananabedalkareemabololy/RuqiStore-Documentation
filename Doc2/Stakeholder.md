@@ -34,7 +34,7 @@ quadrantChart
     "Payment Officer": [0.75, 0.80]
     "Customer": [0.95, 0.55]
 **Note:** The positions in the map represent the relative importance of each system role for requirements analysis and are not measurements of individual people.
-
+```
 ---
 
 # 2.3 Stakeholder Needs Summary
